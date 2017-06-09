@@ -24,8 +24,8 @@ public:
     Attribute() {
     }
 
-    Attribute(string attrName, int type, bool unique, bool isIndex) :
-            attrName(attrName), type(type), unique(unique), isIndex(isIndex) {
+    Attribute(string attrName, int type, bool unique, bool isIndex) : attrName(attrName), type(type), unique(unique),
+                                                                      isIndex(isIndex) {
     }
 };
 
@@ -39,9 +39,9 @@ public:
 public:
     TableStruct() : tupleNum(0) {
     };
-    TableStruct(string tableName, size_t tupleNum, vector<Attribute> attrs):
-            tableName(tableName), tupleNum(tupleNum), attrs(attrs){
 
+    TableStruct(string tableName, size_t tupleNum, vector<Attribute> attrs) : tableName(tableName), tupleNum(tupleNum),
+                                                                              attrs(attrs) {
     }
 };
 
