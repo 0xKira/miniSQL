@@ -7,10 +7,10 @@ class Catalog{
 public:
 	Catalog();
 	~Catalog();
-	void addTable(Table& tableinfo);
+	void addTable(TableStruct& tableinfo);
 	bool hasTable(const string& tablename);
 	void deleteTable(const string& tablename);
-	Table getTable(const string& tablename);
+	TableStruct getTable(const string& tablename);
 	void addIndex(const string& tablename, const string& indexname, const string& attriname);
 	void deleteIndex(const string& indexname);
 };
