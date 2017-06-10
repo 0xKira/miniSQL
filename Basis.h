@@ -48,6 +48,14 @@ public:
     }
 };
 
+class tuple
+{
+public:
+	tuple() {};
+	~tuple() {};
+	vector<Data> data;
+};
+
 typedef enum {
     EQ, LEQ, L, GEQ, G, NEQ
 } CONDITION;
