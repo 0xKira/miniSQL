@@ -25,6 +25,13 @@ public:
     DataF(float f) : x(f) {
         type = 0;
     }
+
+	bool operator<(const DataF& n) { return (x < n.x); };
+	bool operator==(const DataF& n) { return (x == n.x); };
+	bool operator<=(const DataF& n) { return (*this < n) || (*this == n); };
+	bool operator>(const DataF& n) { return !(*this <= n); };
+	bool operator!=(const DataF& n) { return !(*this == n); };
+	bool operator>=(const DataF& n) { return !(*this < n); };
 };
 
 class DataI:public Data {
@@ -34,6 +41,13 @@ public:
     DataI(int i) : x(i) {
         type = -1;
     }
+
+	bool operator<(const DataI& n) { return (x < n.x); };
+	bool operator==(const DataI& n) { return (x == n.x); };
+	bool operator<=(const DataI& n) { return (*this < n) || (*this == n); };
+	bool operator>(const DataI& n) { return !(*this <= n); };
+	bool operator!=(const DataI& n) { return !(*this == n); };
+	bool operator>=(const DataI& n) { return !(*this < n); };
 };
 
 class DataS:public Data {
@@ -46,6 +60,13 @@ public:
             type = 1;
         }
     }
+
+	bool operator<(const DataS& n) { return (x < n.x); };
+	bool operator==(const DataS& n) { return (x == n.x); };
+	bool operator<=(const DataS& n) { return (*this < n) || (*this == n); };
+	bool operator>(const DataS& n) { return !(*this <= n); };
+	bool operator!=(const DataS& n) { return !(*this == n); };
+	bool operator>=(const DataS& n) { return !(*this < n); };
 };
 
 class tuple
