@@ -1,6 +1,7 @@
 #ifndef Catalog_h
 #define Catalog_h
-#include "base.h"
+#include "Basis.h"
+#include "TableStruct.h"
 using namespace std;
 
 class Catalog{ 
