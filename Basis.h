@@ -69,11 +69,11 @@ public:
 	bool operator>=(const DataS& n) { return !(*this < n); };
 };
 
-class tuple
+class Tuple
 {
 public:
-	tuple() {};
-	~tuple() {};
+	Tuple() {};
+	~Tuple() {};
 	vector<Data> data;
 };
 

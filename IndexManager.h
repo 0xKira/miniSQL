@@ -11,8 +11,8 @@ class IndexManager
 	~IndexManager() {};
 	void createIndex(const Attribute& attr, std::string indexName, const TableStruct& table);
 	void dropIndex(std::string indexName, const TableStruct& table);
-	vector<tuple> exactSearchWithIndex(std::string tableName, std::string indexName, const Data& value);
-	vector<tuple> rangeSearchWithIndex(std::string tableName, std::string indexName, const Data& down, const Data& up);
+	vector<Tuple> exactSearchWithIndex(std::string tableName, std::string indexName, const Data& value);
+	vector<Tuple> rangeSearchWithIndex(std::string tableName, std::string indexName, const Data& down, const Data& up);
 	void insertNew(const Data& value);
 	void deleteOld(const Data& value);
 };
