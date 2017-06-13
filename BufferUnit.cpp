@@ -22,6 +22,7 @@ BufferUnit::~BufferUnit() {
         if (block.dirty)
             memcpy(buffer + block.indexInFile * blockSize, block.data, blockSize);
     }
+    file.seekp(0, ios::beg);
     file.write(buffer, fileSize);
     file.close();
     delete[] buffer;
@@ -148,6 +149,7 @@ bool BufferUnit::enlargeFile() {
     fileSize += blockSize;
     char *buffer = new char[fileSize];
     file.read(buffer, fileSize - blockSize);
+    file.seekp(0, ios::beg);
     file.write(buffer, fileSize);
     file.close();
     delete[] buffer;

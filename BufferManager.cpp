@@ -15,15 +15,15 @@ BufferManager::BufferManager(size_t blockSize = 4096, size_t blockNum = 256) : b
 inline int BufferManager::getTableIndex(string tableName) {
     string fileName = "./data/" + tableName + ".data";
     for (int i = 0; i < buffers.size(); i++) {
-        if (buffers[i].fileName == tableName)
+        if (buffers[i].fileName == fileName)
             return i;
     }
     return -1;
 }
 
 bool BufferManager::createTable(string tableName) {
-    // 创建文件
-    ofstream outfile("./data/" + tableName + ".data");
+    // 创建文件，如果文件已经存在就删除
+    ofstream outfile("./data/" + tableName + ".data", ios::trunc);
     outfile.close();
     // 创建BufferUnit
     buffers.push_back(BufferUnit(tableName, blockSize, blockNum));
@@ -77,4 +77,7 @@ bool BufferManager::enlargeFile(string tableName) {
         return false;
     }
     return buffers[index].enlargeFile();
+}
+
+BufferManager::~BufferManager() {
 }
