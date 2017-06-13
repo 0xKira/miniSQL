@@ -32,6 +32,7 @@ public:
     bool enlargeFile(string tableName);
 
     BufferManager(size_t blockSize, size_t blockNum);
+    ~BufferManager();
 };
 
 #endif //MINISQL_BUFFERMANAGER_H
