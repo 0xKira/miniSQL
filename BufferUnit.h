@@ -1,61 +1,154 @@
 //
-// Created by Kira on 2017/6/9.
+// Created by Kira on 2017/6/10.
 //
 
-#ifndef MINISQL_BUFFERUNIT_H
-#define MINISQL_BUFFERUNIT_H
+#include <cstring>
+#include <iostream>
+#include <fstream>
+#include "BufferUnit.h"
 
-#include <vector>
-#include <string>
+BufferUnit::BufferUnit(string tableName, size_t blockSize, size_t blockNum) : blockSize(blockSize), blockNum(blockNum),
+                                                                              fileSize(0) {
+    fileName = "./data/" + tableName + ".data";
+    blockIndexInBuffer.clear();
+    blocks.clear();
+}
 
-using namespace std;
-
-class BufferDataBlock {
-public:
-    char *data;
-    bool visited;
-    bool valid;
-    bool dirty;
-    bool lock;
-    int indexInFile; // 文件中第几个block
-    size_t size;     // data的大小
-
-    BufferDataBlock(size_t size) : visited(false), valid(false), dirty(false), lock(false), indexInFile(-1) {
-        data = new char[size];
-        this->size = size;
+BufferUnit::~BufferUnit() {
+    fstream file(fileName, ios::in | ios::out | ios::binary);
+    char *buffer = new char[fileSize];
+    file.read(buffer, fileSize);
+    for (auto block:blocks) {
+        if (block.dirty)
+            memcpy(buffer + block.indexInFile * blockSize, block.data, blockSize);
     }
+    file.write(buffer, fileSize);
+    file.close();
+    delete[] buffer;
+}
 
-    BufferDataBlock(const BufferDataBlock &block) : visited(false), valid(false), dirty(false), lock(false),
-                                                    indexInFile(-1) {
-        data = new char[block.size];
-        size = block.size;
-    };
-
-    ~BufferDataBlock() {
-        delete[] data;
+int BufferUnit::getAvailableBlock() {
+    if (blocks.size() < blockNum) {
+        // 还有可用的block
+        blocks.push_back(BufferDataBlock(blockSize));
+        return blocks.size() - 1;
     }
-};
-
-// 管理一张表的所有buffer
-class BufferUnit {
-private:
-    size_t blockSize;
-    size_t blockNum;
-    string tableName;
-    size_t fileSize;
-
-public:
-    bool readBlock(int index, char *outBuffer);
-    bool writeBlock(int index, char *inBuffer);
-    bool deleteLastBlock();
-    bool setBlockLock(int index, bool lock);
-    // 这里fileSize是0有问题吗？
-    BufferUnit(string tableName, size_t blockSize, size_t blockNum) : tableName(tableName), blockSize(blockSize),
-                                                                      blockNum(blockNum), fileSize(0) {
+    // 已无空余，利用clock算法找到可用的block
+    while (true) {
+        // 第一遍遍历
+        for (int i = 0; i < blocks.size(); i++) {
+            if (!blocks[i].dirty && !blocks[i].visited)
+                return i;
+        }
+        // 第二遍遍历
+        for (int i = 0; i < blocks.size(); i++) {
+            // 被修改但没被访问
+            if (blocks[i].dirty && !blocks[i].visited)
+                return i;
+            blocks[i].visited = false;
+        }
     }
+}
 
-    ~BufferUnit() {
-    };
-};
+bool BufferUnit::readBlock(int blockIndexInFile, char *outBuffer) {
+    if (blockIndexInFile < 0 || blockIndexInFile >= blockIndexInBuffer.size()) {
+        cerr << "block index error" << endl;
+        return false;
+    }
+    if (blockIndexInBuffer[blockIndexInFile] == -1) {
+        // 该block不在内存中，将其读入内存
+        int index = getAvailableBlock();
+        if (index == -1) {
+            cerr << "no more available block" << endl;
+            return false;
+        }
+        char buffer[blockSize];
+        // 从文件中读取内容
+        fstream file(fileName, ios::in | ios::out | ios::binary);
+        file.seekg(blockIndexInFile * blockSize, ios::beg);
+        file.read(buffer, blockSize);
+        BufferDataBlock &block = blocks[index];
+        if (block.dirty) {
+            // 如果已被修改则需要写回去文件
+            file.seekp(block.indexInFile * blockSize, ios::beg);
+            file.write(block.data, blockSize);
+            block.dirty = false;
+        }
+        file.close();
+        memcpy(block.data, buffer, blockSize);
+        blockIndexInBuffer[blockIndexInFile] = index;
+        block.visited = true;
+    } else {
+        BufferDataBlock &block = blocks[blockIndexInBuffer[blockIndexInFile]];
+        if (!block.valid) {
+            cerr << "not used block" << endl;
+            return false;
+        }
+        memcpy(outBuffer, block.data, blockSize);
+        block.visited = true;
+    }
+    return true;
+}
 
-#endif //MINISQL_BUFFERUNIT_H
+bool BufferUnit::writeBlock(int blockIndexInFile, char *inBuffer) {
+    if (blockIndexInFile < 0 || blockIndexInFile >= blockIndexInBuffer.size()) {
+        cerr << "block index error" << endl;
+        return false;
+    }
+    if (blockIndexInBuffer[blockIndexInFile] == -1) {
+        // 该block不在内存中
+        int index = getAvailableBlock();
+        if (index == -1) {
+            cerr << "no more available block" << endl;
+            return false;
+        }
+        // 与read时不同，不需要读取文件
+        ofstream file(fileName, ios::binary);
+        BufferDataBlock &block = blocks[index];
+        if (block.dirty) {
+            // 如果已被修改则需要写回去文件
+            file.seekp(block.indexInFile * blockSize, ios::beg);
+            file.write(block.data, blockSize);
+        }
+        file.close();
+        memcpy(block.data, inBuffer, blockSize);
+        blockIndexInBuffer[blockIndexInFile] = index;
+        block.dirty = true;
+    } else {
+        BufferDataBlock &block = blocks[blockIndexInBuffer[blockIndexInFile]];
+        if (!block.valid) {
+            cerr << "not used block" << endl;
+            return false;
+        }
+        memcpy(block.data, inBuffer, blockSize);
+        block.dirty = true;
+    }
+    return true;
+}
+
+bool BufferUnit::deleteLastBlock() {
+    int index = blockIndexInBuffer.back();
+    blockIndexInBuffer.pop_back();
+    vector<BufferDataBlock>::iterator itr = blocks.begin() + index;
+    blocks.erase(itr);
+    // 在文件中删除
+    fstream file(fileName, ios::in | ios::out | ios::binary);
+    fileSize -= blockSize;
+    char *buffer = new char[fileSize];
+    file.read(buffer, fileSize);
+    file.write(buffer, fileSize);
+    file.close();
+    delete[] buffer;
+    return false;
+}
+
+bool BufferUnit::enlargeFile() {
+    blockIndexInBuffer.push_back(-1);
+    fstream file(fileName, ios::in | ios::out | ios::binary);
+    fileSize += blockSize;
+    char *buffer = new char[fileSize];
+    file.read(buffer, fileSize - blockSize);
+    file.write(buffer, fileSize);
+    file.close();
+    delete[] buffer;
+}
