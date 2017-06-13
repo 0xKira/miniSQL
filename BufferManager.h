@@ -20,7 +20,8 @@ private:
     size_t blockNum;
 
 private:
-    inline int getTableIndex(string tableName);
+    int getTableIndex(string tableName);
+    bool buildBufferUnits();
 
 public:
     bool createTable(string tableName);

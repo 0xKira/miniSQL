@@ -7,10 +7,14 @@
 #include <fstream>
 #include "BufferUnit.h"
 
-BufferUnit::BufferUnit(string tableName, size_t blockSize, size_t blockNum) : blockSize(blockSize), blockNum(blockNum),
-                                                                              fileSize(0) {
+BufferUnit::BufferUnit(string tableName, size_t blockSize, size_t blockNum, size_t fileSize) : blockSize(blockSize),
+                                                                                               blockNum(blockNum),
+                                                                                               fileSize(fileSize) {
+
     fileName = "./data/" + tableName + ".data";
     blockIndexInBuffer.clear();
+    for (int i = 0; i < fileSize / blockSize; i++)
+        blockIndexInBuffer.push_back(-1);
     blocks.clear();
 }
 
@@ -31,6 +35,8 @@ BufferUnit::~BufferUnit() {
 int BufferUnit::getAvailableBlock() {
     if (blocks.size() < blockNum) {
         // 还有可用的block
+//        BufferDataBlock *dataBlock = new BufferDataBlock(blockSize);
+//        blocks.push_back(*dataBlock);
         blocks.push_back(BufferDataBlock(blockSize));
         return blocks.size() - 1;
     }
@@ -77,14 +83,12 @@ bool BufferUnit::readBlock(int blockIndexInFile, char *outBuffer) {
         }
         file.close();
         memcpy(block.data, buffer, blockSize);
+        memcpy(outBuffer, buffer, blockSize);
         blockIndexInBuffer[blockIndexInFile] = index;
+        block.indexInFile = blockIndexInFile;
         block.visited = true;
     } else {
         BufferDataBlock &block = blocks[blockIndexInBuffer[blockIndexInFile]];
-        if (!block.valid) {
-            cerr << "not used block" << endl;
-            return false;
-        }
         memcpy(outBuffer, block.data, blockSize);
         block.visited = true;
     }
@@ -104,23 +108,20 @@ bool BufferUnit::writeBlock(int blockIndexInFile, char *inBuffer) {
             return false;
         }
         // 与read时不同，不需要读取文件
-        ofstream file(fileName, ios::binary);
         BufferDataBlock &block = blocks[index];
         if (block.dirty) {
+            ofstream file(fileName, ios::binary | ios::app);
             // 如果已被修改则需要写回去文件
             file.seekp(block.indexInFile * blockSize, ios::beg);
             file.write(block.data, blockSize);
+            file.close();
         }
-        file.close();
         memcpy(block.data, inBuffer, blockSize);
         blockIndexInBuffer[blockIndexInFile] = index;
+        block.indexInFile = blockIndexInFile;
         block.dirty = true;
     } else {
         BufferDataBlock &block = blocks[blockIndexInBuffer[blockIndexInFile]];
-        if (!block.valid) {
-            cerr << "not used block" << endl;
-            return false;
-        }
         memcpy(block.data, inBuffer, blockSize);
         block.dirty = true;
     }
@@ -133,12 +134,14 @@ bool BufferUnit::deleteLastBlock() {
     vector<BufferDataBlock>::iterator itr = blocks.begin() + index;
     blocks.erase(itr);
     // 在文件中删除
-    fstream file(fileName, ios::in | ios::out | ios::binary);
     fileSize -= blockSize;
     char *buffer = new char[fileSize];
-    file.read(buffer, fileSize);
-    file.write(buffer, fileSize);
-    file.close();
+    ifstream in(fileName, ios::binary);
+    in.read(buffer, fileSize);
+    in.close();
+    ofstream out(fileName, ios::binary);
+    out.write(buffer, fileSize);
+    out.close();
     delete[] buffer;
     return false;
 }

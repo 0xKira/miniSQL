@@ -5,14 +5,38 @@
 #include <fstream>
 #include <iostream>
 #include <cstring>
+#include <io.h>
 #include "BufferManager.h"
+
+bool BufferManager::buildBufferUnits() {
+    long hFile = 0;
+    size_t len;
+    struct _finddata_t fileInfo;
+    string pathName, fileName;
+
+    if ((hFile = _findfirst(pathName.assign("./data").append("\\*").c_str(), &fileInfo)) == -1)
+        return false;
+
+    do {
+        if (!(fileInfo.attrib & _A_SUBDIR)) {
+            // 是文件
+            fileName = fileInfo.name;
+            len = fileName.length();
+            if (fileName.substr(len - 5, 5) == ".data")
+                buffers.push_back(BufferUnit(fileName.substr(0, len - 5), blockSize, blockNum, fileInfo.size));
+        }
+    } while (_findnext(hFile, &fileInfo) == 0);
+    _findclose(hFile);
+    return true;
+}
 
 BufferManager::BufferManager(size_t blockSize = 4096, size_t blockNum = 256) : blockSize(blockSize),
                                                                                blockNum(blockNum) {
     buffers.clear();
+    buildBufferUnits();
 }
 
-inline int BufferManager::getTableIndex(string tableName) {
+int BufferManager::getTableIndex(string tableName) {
     string fileName = "./data/" + tableName + ".data";
     for (int i = 0; i < buffers.size(); i++) {
         if (buffers[i].fileName == fileName)
@@ -26,7 +50,7 @@ bool BufferManager::createTable(string tableName) {
     ofstream outfile("./data/" + tableName + ".data", ios::trunc);
     outfile.close();
     // 创建BufferUnit
-    buffers.push_back(BufferUnit(tableName, blockSize, blockNum));
+    buffers.push_back(BufferUnit(tableName, blockSize, blockNum, 0));
     return true;
 }
 
