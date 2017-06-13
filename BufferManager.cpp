@@ -7,6 +7,20 @@
 #include <cstring>
 #include "BufferManager.h"
 
+BufferManager::BufferManager(size_t blockSize = 4096, size_t blockNum = 256) : blockSize(blockSize),
+                                                                               blockNum(blockNum) {
+    buffers.clear();
+}
+
+inline int BufferManager::getTableIndex(string tableName) {
+    string fileName = "./data/" + tableName + ".data";
+    for (int i = 0; i < buffers.size(); i++) {
+        if (buffers[i].fileName == tableName)
+            return i;
+    }
+    return -1;
+}
+
 bool BufferManager::createTable(string tableName) {
     // 创建文件
     ofstream outfile("./data/" + tableName + ".data");
@@ -24,36 +38,43 @@ bool BufferManager::deleteTable(string tableName) {
         return false;
     }
     // 清理相关内存
-    vector<BufferUnit>::iterator index = buffers.begin() + getTableIndex(tableName);
-    buffers.erase(index);
+    int index = getTableIndex(tableName);
+    if (index == -1) {
+        return false;
+    }
+    vector<BufferUnit>::iterator itr = buffers.begin() + index;
+    buffers.erase(itr);
     return true;
 }
 
-bool BufferManager::readBlockData(string tableName, size_t blockIndex, char *outBuffer) {
+bool BufferManager::readBlockData(string tableName, size_t blockIndexInFile, char *outBuffer) {
     int index = getTableIndex(tableName);
     if (index == -1) {
         return false;
     }
-    return buffers[index].readBlock(blockIndex, outBuffer);
+    return buffers[index].readBlock(blockIndexInFile, outBuffer);
 }
 
-bool BufferManager::writeBlockData(string tableName, size_t blockIndex, char *inBuffer) {
+bool BufferManager::writeBlockData(string tableName, size_t blockIndexInFile, char *inBuffer) {
     int index = getTableIndex(tableName);
     if (index == -1) {
         return false;
     }
-    return buffers[index].writeBlock(blockIndex, inBuffer);
+    return buffers[index].writeBlock(blockIndexInFile, inBuffer);
 }
 
-BufferManager::BufferManager(size_t blockSize = 4096, size_t blockNum = 256) : blockSize(blockSize),
-                                                                               blockNum(blockNum) {
-    buffers.clear();
-}
-
-inline int BufferManager::getTableIndex(string tableName) {
-    for (int i = 0; i < buffers.size(); i++) {
-        if (buffers[i].tableName == tableName)
-            return i;
+bool BufferManager::deleteLastBlockOfFile(string tableName) {
+    int index = getTableIndex(tableName);
+    if (index == -1) {
+        return false;
     }
-    return -1;
+    return buffers[index].deleteLastBlock();
+}
+
+bool BufferManager::enlargeFile(string tableName) {
+    int index = getTableIndex(tableName);
+    if (index == -1) {
+        return false;
+    }
+    return buffers[index].enlargeFile();
 }
