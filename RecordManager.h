@@ -16,14 +16,21 @@ public:
     bool dropTable(string tableName);
     bool insertIntoTable(const TableStruct &table);
     bool deleteFromTable(const TableStruct &table,
-                         const vector<CONDITION> &conditions,
+                         const vector<Condition> &conditions,
                          const vector<int> &range,
-                         const vector<int> &moved,
-                         const vector<int> &deleted);
+                         vector<Data&> &moved,
+                         vector<int> &deleted);
     bool selectFromTable(const TableStruct &table,
-                         const vector<CONDITION> &conditions,
+                         const vector<Condition> &conditions,
                          const vector<int> &range,
-                         vector<char *> &result);
+                         vector<Tuple> &result);
+    bool deleteFromTableWithIndex(const TableStruct &table,
+                         const vector<Condition> &conditions,
+                         vector<Data&> &moved,
+                         vector<int> &deleted);
+    bool selectFromTableWithIndex(const TableStruct &table,
+                         const vector<Condition> &conditions,
+                         vector<Tuple> &result);
 };
 
 

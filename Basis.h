@@ -6,6 +6,7 @@
 #define MINISQL_BASIS_H
 
 #include <string>
+#include <vector>
 
 using namespace std;
 
@@ -69,8 +70,7 @@ public:
 	bool operator>=(const DataS& n) { return !(*this < n); };
 };
 
-class Tuple
-{
+class Tuple {
 public:
 	Tuple() {};
 	~Tuple() {};
@@ -88,8 +88,10 @@ class Condition {
 
 class TableException: public std::exception{
 public:
-    TableException(string s):text(s){}
-    string what(){
+    TableException(string s) : text(s) {
+    }
+
+    string what() {
         return text;
     };
 private:

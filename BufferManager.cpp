@@ -8,6 +8,16 @@
 #include <io.h>
 #include "BufferManager.h"
 
+// struct _finddata_t
+// {
+//     unsigned attrib;     //文件属性
+//     time_t time_create;  //文件创建时间
+//     time_t time_access;  //文件上一次访问时间
+//     time_t time_write;   //文件上一次修改时间
+//     _fsize_t size;  //文件字节数
+//     char name[_MAX_FNAME]; //文件名
+// };
+
 bool BufferManager::buildBufferUnits() {
     long hFile = 0;
     size_t len;
@@ -36,7 +46,7 @@ BufferManager::BufferManager(size_t blockSize = 4096, size_t blockNum = 256) : b
     buildBufferUnits();
 }
 
-int BufferManager::getTableIndex(string tableName) {
+inline int BufferManager::getTableIndex(string tableName) {
     string fileName = "./data/" + tableName + ".data";
     for (int i = 0; i < buffers.size(); i++) {
         if (buffers[i].fileName == fileName)
@@ -45,7 +55,7 @@ int BufferManager::getTableIndex(string tableName) {
     return -1;
 }
 
-bool BufferManager::createTable(string tableName) {
+bool BufferManager::createTable(const string &tableName) {
     // 创建文件，如果文件已经存在就删除
     ofstream outfile("./data/" + tableName + ".data", ios::trunc);
     outfile.close();
@@ -54,7 +64,7 @@ bool BufferManager::createTable(string tableName) {
     return true;
 }
 
-bool BufferManager::deleteTable(string tableName) {
+bool BufferManager::deleteTable(const string &tableName) {
     // 删除文件
     string fileName = "./data/" + tableName + ".data";
     if (remove(fileName.c_str())) {
@@ -71,7 +81,7 @@ bool BufferManager::deleteTable(string tableName) {
     return true;
 }
 
-bool BufferManager::readBlockData(string tableName, size_t blockIndexInFile, char *outBuffer) {
+bool BufferManager::readBlockData(const string &tableName, size_t blockIndexInFile, char *outBuffer) {
     int index = getTableIndex(tableName);
     if (index == -1) {
         return false;
@@ -79,7 +89,7 @@ bool BufferManager::readBlockData(string tableName, size_t blockIndexInFile, cha
     return buffers[index].readBlock(blockIndexInFile, outBuffer);
 }
 
-bool BufferManager::writeBlockData(string tableName, size_t blockIndexInFile, char *inBuffer) {
+bool BufferManager::writeBlockData(const string &tableName, size_t blockIndexInFile, char *inBuffer) {
     int index = getTableIndex(tableName);
     if (index == -1) {
         return false;
@@ -87,7 +97,7 @@ bool BufferManager::writeBlockData(string tableName, size_t blockIndexInFile, ch
     return buffers[index].writeBlock(blockIndexInFile, inBuffer);
 }
 
-bool BufferManager::deleteLastBlockOfFile(string tableName) {
+bool BufferManager::deleteLastBlockOfFile(const string &tableName) {
     int index = getTableIndex(tableName);
     if (index == -1) {
         return false;
@@ -95,7 +105,7 @@ bool BufferManager::deleteLastBlockOfFile(string tableName) {
     return buffers[index].deleteLastBlock();
 }
 
-bool BufferManager::enlargeFile(string tableName) {
+bool BufferManager::enlargeFile(const string &tableName) {
     int index = getTableIndex(tableName);
     if (index == -1) {
         return false;
