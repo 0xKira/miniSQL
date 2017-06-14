@@ -15,20 +15,20 @@ public:
     bool createTable(string tableName);
     bool dropTable(string tableName);
     bool insertIntoTable(const TableStruct &table);
-    bool deleteFromTable(const TableStruct &table,
-                         const vector<Condition> &conditions,
-                         const vector<int> &range,
-                         vector<Data&> &moved,
-                         vector<int> &deleted);
-    bool selectFromTable(const TableStruct &table,
-                         const vector<Condition> &conditions,
-                         const vector<int> &range,
-                         vector<Tuple> &result);
     bool deleteFromTableWithIndex(const TableStruct &table,
                          const vector<Condition> &conditions,
+                         const vector<int> &range,
                          vector<Data&> &moved,
                          vector<int> &deleted);
     bool selectFromTableWithIndex(const TableStruct &table,
+                         const vector<Condition> &conditions,
+                         const vector<int> &range,
+                         vector<Tuple> &result);
+    bool deleteFromTable(const TableStruct &table,
+                         const vector<Condition> &conditions,
+                         vector<Data&> &moved,
+                         vector<int> &deleted);
+    bool selectFromTable(const TableStruct &table,
                          const vector<Condition> &conditions,
                          vector<Tuple> &result);
 };

@@ -21,23 +21,23 @@ bool RecordManager::insertIntoTable(const TableStruct &table) {
 }
 
 bool
-RecordManager::deleteFromTable(const TableStruct &table, const vector<Condition> &conditions, const vector<int> &range,
+RecordManager::deleteFromTableWithIndex(const TableStruct &table, const vector<Condition> &conditions, const vector<int> &range,
                                vector<Data&> &moved, vector<int> &deleted) {
     return false;
 }
 
 bool
-RecordManager::selectFromTable(const TableStruct &table, const vector<Condition> &conditions, const vector<int> &range,
+RecordManager::selectFromTableWithIndex(const TableStruct &table, const vector<Condition> &conditions, const vector<int> &range,
                                vector<Tuple> &result) {
     return false;
 }
 
-bool RecordManager::deleteFromTableWithIndex(const TableStruct &table, const vector<Condition> &conditions,
+bool RecordManager::deleteFromTable(const TableStruct &table, const vector<Condition> &conditions,
                                              vector<Data &> &moved, vector<int> &deleted) {
     return false;
 }
 
-bool RecordManager::selectFromTableWithIndex(const TableStruct &table, const vector<Condition> &conditions,
+bool RecordManager::selectFromTable(const TableStruct &table, const vector<Condition> &conditions,
                                              vector<Tuple> &result) {
     return false;
 }
