@@ -58,7 +58,7 @@ public:
     bool deleteLastBlock();
     bool enlargeFile();
     // 这里fileSize是0有问题吗？
-    BufferUnit(string tableName, size_t blockSize, size_t blockNum, size_t fileSize);
+    BufferUnit(const string &tableName, size_t blockSize, size_t blockNum, size_t fileSize);
 
     ~BufferUnit();
 };

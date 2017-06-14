@@ -12,8 +12,8 @@
 class RecordManager {
 public:
     RecordManager();
-    bool createTable(string tableName);
-    bool dropTable(string tableName);
+    bool createTable(const string &tableName);
+    bool dropTable(const string &tableName);
     bool insertIntoTable(const TableStruct &table);
     bool deleteFromTableWithIndex(const TableStruct &table,
                          const vector<Condition> &conditions,

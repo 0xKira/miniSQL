@@ -8,11 +8,11 @@ RecordManager::RecordManager() {
 
 }
 
-bool RecordManager::createTable(string tableName) {
+bool RecordManager::createTable(const string &tableName) {
     return false;
 }
 
-bool RecordManager::dropTable(string tableName) {
+bool RecordManager::dropTable(const string &tableName) {
     return false;
 }
 
@@ -21,24 +21,28 @@ bool RecordManager::insertIntoTable(const TableStruct &table) {
 }
 
 bool
-RecordManager::deleteFromTableWithIndex(const TableStruct &table, const vector<Condition> &conditions, const vector<int> &range,
-                               vector<Data&> &moved, vector<int> &deleted) {
+RecordManager::deleteFromTableWithIndex(const TableStruct &table, const vector<Condition> &conditions,
+                                        const vector<int> &range, vector<Data &> &moved, vector<int> &deleted) {
+
     return false;
 }
 
 bool
-RecordManager::selectFromTableWithIndex(const TableStruct &table, const vector<Condition> &conditions, const vector<int> &range,
-                               vector<Tuple> &result) {
+RecordManager::selectFromTableWithIndex(const TableStruct &table, const vector<Condition> &conditions,
+                                        const vector<int> &range, vector<Tuple> &result) {
+
     return false;
 }
 
-bool RecordManager::deleteFromTable(const TableStruct &table, const vector<Condition> &conditions,
-                                             vector<Data &> &moved, vector<int> &deleted) {
+bool
+RecordManager::deleteFromTable(const TableStruct &table, const vector<Condition> &conditions, vector<Data &> &moved,
+                               vector<int> &deleted) {
+
     return false;
 }
 
-bool RecordManager::selectFromTable(const TableStruct &table, const vector<Condition> &conditions,
-                                             vector<Tuple> &result) {
+bool
+RecordManager::selectFromTable(const TableStruct &table, const vector<Condition> &conditions, vector<Tuple> &result) {
     return false;
 }
 

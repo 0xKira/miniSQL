@@ -7,7 +7,7 @@
 #include <fstream>
 #include "BufferUnit.h"
 
-BufferUnit::BufferUnit(string tableName, size_t blockSize, size_t blockNum, size_t fileSize) : blockSize(blockSize),
+BufferUnit::BufferUnit(const string &tableName, size_t blockSize, size_t blockNum, size_t fileSize) : blockSize(blockSize),
                                                                                                blockNum(blockNum),
                                                                                                fileSize(fileSize) {
 
