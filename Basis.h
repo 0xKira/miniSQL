@@ -70,12 +70,13 @@ public:
 	bool operator>=(const DataS& n) { return !(*this < n); };
 };
 
-class Tuple {
-public:
-	Tuple() {};
-	~Tuple() {};
-	vector<Data> data;
-};
+//class Tuple {
+//public:
+//	Tuple() {};
+//	~Tuple() {};
+//	vector<Data> data;
+//};
+typedef vector<Data> Tuple;
 
 typedef enum {
     EQ, LEQ, L, GEQ, G, NEQ

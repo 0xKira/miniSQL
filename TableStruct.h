@@ -16,7 +16,7 @@ const int TYPE_FLOAT = -1;
 class Attribute {
 public:
     string attrName;
-    int type;   // -1 -> float, 0 -> int, >0 -> char
+    int type;   // 0 -> float, -1 -> int, >0 -> char
     bool unique;
     bool isIndex;
 
@@ -35,6 +35,7 @@ public:
     vector<Attribute> attrs;
     bool hasIndex;
     size_t tupleNum;
+    size_t tupleSize;
 
 public:
     TableStruct() : tupleNum(0) {
@@ -42,6 +43,18 @@ public:
 
     TableStruct(string tableName, size_t tupleNum, vector<Attribute> attrs) : tableName(tableName), tupleNum(tupleNum),
                                                                               attrs(attrs) {
+        tupleSize = 0;
+        for (auto attr:attrs) {
+            switch(attr.type) {
+                case -1:
+                case 0:
+                    tupleSize += 4;
+                    break;
+                default:
+                    tupleSize += attr.type;
+                    break;
+            }
+        }
     }
 };
 
