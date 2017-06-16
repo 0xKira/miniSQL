@@ -16,7 +16,7 @@ const int TYPE_FLOAT = -1;
 class Attribute {
 public:
     string attrName;
-    int type;   // 0 -> float, -1 -> int, >0 -> char
+    int type;   // -1 -> float, 0 -> int, >0 -> char
     bool unique;
     bool isIndex;
 
@@ -46,8 +46,8 @@ public:
         tupleSize = 0;
         for (auto attr:attrs) {
             switch(attr.type) {
-                case -1:
-                case 0:
+                case TYPE_FLOAT:
+                case TYPE_INT:
                     tupleSize += 4;
                     break;
                 default:

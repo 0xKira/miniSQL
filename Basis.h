@@ -24,7 +24,7 @@ public:
     float x;
 
     DataF(float f) : x(f) {
-        type = 0;
+        type = -1;
     }
 
 	bool operator<(const DataF& n) { return (x < n.x); };
@@ -40,7 +40,7 @@ public:
     int x;
 
     DataI(int i) : x(i) {
-        type = -1;
+        type = 0;
     }
 
 	bool operator<(const DataI& n) { return (x < n.x); };
@@ -76,7 +76,7 @@ public:
 //	~Tuple() {};
 //	vector<Data> data;
 //};
-typedef vector<Data> Tuple;
+typedef vector<Data *> Tuple;
 
 typedef enum {
     EQ, LEQ, L, GEQ, G, NEQ
