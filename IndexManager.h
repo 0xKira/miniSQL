@@ -1,18 +1,31 @@
-#pragma once
-#include <fstream>
-#include "Basis.h"
-#include "TableStruct.h"
-#include "BufferManager.h"
-#include "BufferUnit.h"
+#ifndef Interpreter_h
+#define Interpreter_h
+#include "base.h"
 
-class IndexManager
-{
-	IndexManager() {};
-	~IndexManager() {};
-	void createIndex(const Attribute& attr, std::string indexName, const TableStruct& table);
-	void dropIndex(std::string indexName, const TableStruct& table);
-	vector<Tuple> exactSearchWithIndex(std::string tableName, std::string indexName, const Data& value);
-	vector<Tuple> rangeSearchWithIndex(std::string tableName, std::string indexName, const Data& down, const Data& up);
-	void insertNew(const Data& value);
-	void deleteOld(const Data& value);
+class Interpreter{
+private:
+    std::string querys;//query string
+public:
+	Interpreter();
+	~Interpreter();
+	void inputQuery();
+    void EXEC();
+    void EXEC_CREATE();
+    void EXEC_CREATE_TABLE();
+    void EXEC_CREATE_INDEX();
+    void EXEC_DROP();
+	void EXEC_SELECT();
+    void EXEC_INSERT();
+    void EXEC_DELETE();
+    void EXEC_PRINT(TableStruct &table);
+    void EXEC_EXIT();
+    void EXEC_FILE();
+    
+    vector<Condition> ConditionList(TableStruct& table, string where);
+    Tuple TupleList(TableStruct& table, string where);
 };
+
+bool InverttoInt(string s, int& x);
+bool InvertToFloat(string s, float& x);
+
+#endif /* Interpreter_h */
