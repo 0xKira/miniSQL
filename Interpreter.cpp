@@ -183,28 +183,24 @@ void EXEC_CREATE_TABLE() {
 				temp->type=-1;
 			} else if(s=="char") {
 				is>>s;
-				if(s!="(")
-				{
+				if(s!="(") {
 					delete temp;
 					//errror posotion
 					cout<<"error 1!"<<endl;
 				}
-					
+
 				is>>s;
 				int num;
-				if(InverttoInt(s,num)==false)
-				{
+				if(InverttoInt(s,num)==false) {
 					delete temp;
 					//errror posotion
 					cout<<"error 2!"<<endl;
-				}	
-				else {
+				} else {
 					temp->type=num;
 				}
 
 				is>>s;
-				if(s!=")")
-				{
+				if(s!=")") {
 					delete temp;
 					//errror posotion
 					cout<<"error 3!"<<endl;
@@ -277,22 +273,30 @@ void EXEC_CREATE_INDEX() {
 void EXEC_DROP() {
 	if(querys[4]!=' ')
 		//errror posotion
-		cout<<"error!"<<endl;
-
+		cout<<"error no space!"<<endl;
+	Catalog ca;
+	API ap;
 	if(querys.substr(5, 5) == "table") {
 		if(querys[10]!=' ') {
 			//errror posotion
-			cout<<"error!"<<endl;
+			cout<<"error no space2!"<<endl;
 		}
 		string str=querys.substr(11,querys.length()-11);
 		istringstream is(str);
 		string tablename;
 		is>>tablename;
+		if(!hasTable(tablename)) {
+			//errror posotion
+			cout<<"error no such table!"<<endl;
+		}
 		string s;
+		is>>s;
 		if(s!=";") {
 			//errror posotion
 			cout<<"error!"<<endl;
 		}
+		ap.dropTable(tablename);
+		cout<<"drop the table named "<<tablename<<endl;
 		//DROP TABLE BY OTHERS
 	} else if(querys.substr(5, 5) == "index") {
 		if(querys[10]!=' ') {
@@ -303,12 +307,15 @@ void EXEC_DROP() {
 		string str=querys.substr(11,querys.length()-11);
 		istringstream is(str);
 		string indexname;
-		is>>tablename;
+		is>>indexname;
 		string s;
+		is>>s;
 		if(s!=";") {
 			//errror posotion
 			cout<<"error!"<<endl;
 		}
+		ap.dropIndex(indexname);
+		cout<<"drop the index named "<<indexname<<endl;
 		//DROP index BY OTHERS
 	} else
 		//error position
@@ -359,27 +366,39 @@ vector<Condition> ConditionList(TableStruct& table, string where) {
 			cout<<"error! no such operation"<<endl;
 		}
 		is>>s;
-		if(s=="and")
-		{
+		if(s=="and") {
 			delete temp;
 			//errror posotion
 			cout<<"error! no such operation"<<endl;
 		}
-		if((table->attrs[temp->attrindex].type<0)&&(InverttoToFloat(s, f_type)))
-		{
-			
+		if((table->attrs[temp->attrindex].type<0)&&(InverttoToFloat(s, f_type))) {
+			DataF data_f(f_type);
+			temp->d=data_f;
+			cond.push_back(*temp);
+		} else if((table->attrs[temp->attrindex].type==0)&&(InverttoInt(s, i_type))) {
+			DataI data_i(i_type);
+			temp->d=data_i;
+			cond.push_back(*temp);
+		} else if(table->attrs[temp->attrindex].type>0) {
+			DataS data_s(s);
+			temp->d=data_s;
+			cond.push_back(*temp);
+		} else {
+			delete temp;
+			//errror posotion
+			cout<<"error! no such kind of type"<<endl;
 		}
-		else if((table->attrs[temp->attrindex].type==0)&&(InverttoInt(s, i_type)))
-		{
-			DataF 
+		is>>s;
+		if(s==";")
+			break;
+		else if(s!="and") {
+			//errror posotion
+			cout<<"error! no such SQL"<<endl;
 		}
-		else if(table->attrs[temp->attrindex].type>0)
-		{
-			
-		}
+
 	}
 
-
+	return cond;
 }
 
 void EXEC_SELECT() {
@@ -394,11 +413,6 @@ void EXEC_SELECT() {
 	string s,tablename,where;
 	int start;
 
-	for(start=7; start<(querys.length()-5); start++) {
-		if(querys.substr(start,5)=="where")
-			break;
-	}
-	where=querys.substr(start+6,querys.length()-6-start);
 	is>>s;
 	if(s!="*") {
 		//errror posotion
@@ -424,6 +438,11 @@ void EXEC_SELECT() {
 		//errror posotion
 		cout<<"error!"<<endl;
 	}
+	for(start=7; start<(querys.length()-5); start++) {
+		if(querys.substr(start,5)=="where")
+			break;
+	}
+	where=querys.substr(start+6,querys.length()-6-start);
 
 	table=ca.getTable(tablename);
 	vector<Condition> cond;
@@ -436,11 +455,92 @@ void EXEC_SELECT() {
 }
 
 void EXEC_INSERT() {
+	if(querys[6]!=' ')
+		//errror posotion
+		cout<<"error!"<<endl;
+	string str=querys.substr(7,querys.length()-7);
+	istringstream is(str);
+	string s,tablename;
+	Catalog ca;
+	TableStruct table;
 
+	is>>s;
+	if(s!="into") {
+		//errror posotion
+		cout<<"error!"<<endl;
+	}
+	is>>tablename;
+	if(!ca.hasTable(tablename)) {
+		//errror posotion
+		cout<<"error!"<<endl;
+	}
+	table=ca.getTable(tablename);
+	is>>s;
+	if(s!="values") {
+		//errror posotion
+		cout<<"error!"<<endl;
+	}
+	/*is>>s;
+	if(s!="(")
+	{
+		//errror posotion
+		cout<<"error!"<<endl;
+	}
+	Tuple onetuple;
+	while(true)
+	{
+
+	}*/
+	API ap;
+	ap.insertData(tablename,onetuple);
 }
 
 void EXEC_DELETE() {
+	if(querys[6]!=' ')
+		//errror posotion
+		cout<<"error!"<<endl;
+	Catalog ca;
+	API ap;
+	TableStruct table;
+	string str=querys.substr(7,querys.length()-7);
+	istringstream is(str);
+	string s,tablename,where;
+	int start;
 
+	is>>s;
+	if(s!="from") {
+		//errror posotion
+		cout<<"error!"<<endl;
+	}
+	is>>tablename;
+	if(!ca.hasTable(tablename)) {
+		//errror posotion
+		cout<<"error!"<<endl;
+	}
+	is>>s;
+	if(s==";") {
+		//select all
+		table=ap.deleteData(tablename);
+		//print all the tuples;
+		return ;
+	} else if(s!="where") {
+		//errror posotion
+		cout<<"error!"<<endl;
+	}
+	for(start=7; start<(querys.length()-5); start++) {
+		if(querys.substr(start,5)=="where")
+			break;
+	}
+	where=querys.substr(start+6,querys.length()-6-start);
+
+	table=ca.getTable(tablename);
+	vector<Condition> cond;
+	cond.clear();
+	cond=ConditionList(table,where);
+	/*TableStruct output=ap.select(tableName, cond);
+	EXEC_PRINT(output);*/
+
+	return ;
 }
 
 void EXEC_PRINT(TableStruct &table) {
@@ -456,7 +556,14 @@ void EXEC_EXIT() {
 }
 
 void EXEC_FILE() {
-
+	if(querys[8]!=' ')
+		//errror posotion
+		cout<<"error!"<<endl;
+	string str=querys.substr(9,querys.length()-9);
+	istringstream is(str);
+	string filename;
+	is>>filename;
+	cout<<"we will open the file named: "<<filename<<endl;
 }
 
 bool InverttoInt(string s, int& x) {
