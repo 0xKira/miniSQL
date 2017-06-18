@@ -335,13 +335,13 @@ vector<Condition> ConditionList(TableStruct& table, string where) {
 		is>>attrname;
 		//cout<<attername<<endl;
 		Condition* temp = new Condition;
-		for(i=0; i<table->attrs.size(); i++) {
-			if(table->attrs[i].attrName==attrname) {
+		for(i=0; i<table.attrs.size(); i++) {
+			if(table.attrs[i].attrName==attrname) {
 				temp->attrindex=i;
 				break;
 			}
 		}
-		if(i==table->attrs.size()) {
+		if(i==table.attrs.size()) {
 			delete temp;
 			//errror posotion
 			cout<<"error! no such attribute"<<endl;
@@ -371,15 +371,15 @@ vector<Condition> ConditionList(TableStruct& table, string where) {
 			//errror posotion
 			cout<<"error! no such operation"<<endl;
 		}
-		if((table->attrs[temp->attrindex].type<0)&&(InverttoToFloat(s, f_type))) {
+		if((table.attrs[temp->attrindex].type<0)&&(InvertToFloat(s, f_type))) {
 			DataF data_f(f_type);
 			temp->d=data_f;
 			cond.push_back(*temp);
-		} else if((table->attrs[temp->attrindex].type==0)&&(InverttoInt(s, i_type))) {
+		} else if((table.attrs[temp->attrindex].type==0)&&(InverttoInt(s, i_type))) {
 			DataI data_i(i_type);
 			temp->d=data_i;
 			cond.push_back(*temp);
-		} else if(table->attrs[temp->attrindex].type>0) {
+		} else if(table.attrs[temp->attrindex].type>0) {
 			DataS data_s(s);
 			temp->d=data_s;
 			cond.push_back(*temp);
@@ -395,7 +395,6 @@ vector<Condition> ConditionList(TableStruct& table, string where) {
 			//errror posotion
 			cout<<"error! no such SQL"<<endl;
 		}
-
 	}
 
 	return cond;
@@ -454,15 +453,60 @@ void EXEC_SELECT() {
 	return ;
 }
 
+Tuple TupleList(TableStruct& table, string where) {
+	Tuple tup;
+	tup.clear();
+	istringstream is(where);
+	string s;
+	int i_type;
+	float f_type;
+	int i;
+
+	is>>s;
+	if(s!="(") {
+		//errror posotion
+		cout<<"error! wrong SQL of values"<<endl;
+	}
+	for(i=0; i<table.attrs.size(); i++) {
+		is>>s;
+		if(is==")") {
+			//errror posotion
+			cout<<"error! wrong SQL of values"<<endl;
+		}
+		if((table.attrs[i].type<0)&&(InvertToFloat(s, f_type))) {
+			Data* da = new DataF(f_type);
+			tup.push_back(da);
+		} else if((table.attrs[i].type<0)&&(InverttoInt(s, i_type))) {
+			Data* da = new DataI(i_type);
+		} else if(table.attrs[i].type<0) {
+			Data* da = new DataS(s);
+		} else {
+			//errror posotion
+			cout<<"error! "<<endl;
+		}
+	}
+	is>>s;
+	if(s==")")
+		return tup;
+	else {
+		//errror posotion
+		cout<<"error! wrong SQL of values"<<endl;
+	}
+}
+
 void EXEC_INSERT() {
 	if(querys[6]!=' ')
 		//errror posotion
 		cout<<"error!"<<endl;
+
 	string str=querys.substr(7,querys.length()-7);
 	istringstream is(str);
-	string s,tablename;
+	string s,tablename,values;
 	Catalog ca;
+	Tuple onetuple;
+	API ap;
 	TableStruct table;
+	int start;
 
 	is>>s;
 	if(s!="into") {
@@ -474,25 +518,22 @@ void EXEC_INSERT() {
 		//errror posotion
 		cout<<"error!"<<endl;
 	}
-	table=ca.getTable(tablename);
 	is>>s;
 	if(s!="values") {
 		//errror posotion
 		cout<<"error!"<<endl;
 	}
-	/*is>>s;
-	if(s!="(")
-	{
-		//errror posotion
-		cout<<"error!"<<endl;
+	for(start=7; start<(querys.length()-5); start++) {
+		if(querys.substr(start,6)=="values")
+			break;
 	}
-	Tuple onetuple;
-	while(true)
-	{
+	values=querys.substr(start+7,querys.length()-7-start);
 
-	}*/
-	API ap;
+	table=ca.getTable(tablename);
+	onetuple.clear();
+	onetuple=TupleList(table,values);
 	ap.insertData(tablename,onetuple);
+
 }
 
 void EXEC_DELETE() {
