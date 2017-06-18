@@ -23,7 +23,7 @@ void Interpreter::inputQuery() {
 	temp.clear();
 	while(true) {
 		c=cin.get();
-		if((c<='z'&&c>='a')||(c<='Z'&&c>='A')||(c>='0'&&c<='9')) {
+		if((c<='z'&&c>='a')||(c<='Z'&&c>='A')||(c>='0'&&c<='9')||c=='_'||c=='.') {
 			temp += c;
 			valid=1;
 		} else if(c == '\n' || c == '\t' || c == ' ') {
@@ -98,8 +98,8 @@ void EXEC() {
 	} else if(querys.substr(0,4)=="exit") {
 		EXEC_EXIT();
 	} else if(querys.substr(0,10)=="show table") {
-		EXEC_SHOW();
-	} else if (query.substr(0, 8) == "execfile") {
+		EXEC_PRINT();
+	} else if (querys.substr(0, 8) == "execfile") {
 		EXEC_FILE();
 	} else {
 		cout<<"error!"<<endl;
@@ -593,7 +593,7 @@ void EXEC_PRINT(TableStruct &table) {
 }
 
 void EXEC_EXIT() {
-
+	cout<<"exit this minisql"<<endl;
 }
 
 void EXEC_FILE() {
@@ -603,8 +603,106 @@ void EXEC_FILE() {
 	string str=querys.substr(9,querys.length()-9);
 	istringstream is(str);
 	string filename;
+	string temp;
+	char c;
+	int valid=0,flag=0;
+	int start;
+
 	is>>filename;
-	cout<<"we will open the file named: "<<filename<<endl;
+	cout<<filename<<endl;
+	ifstream in(filename.c_str());
+	if(!in.is_open()) {
+		cout<<"can not open this file: "<<filename<<endl;
+	}
+	while(!in.eof()) {
+		querys.clear();
+		flag=0;
+		while(true) {
+			c=in.get();
+			if(c==EOF) {
+				flag=1;
+				break;
+			}
+
+			if((c<='z'&&c>='a')||(c<='Z'&&c>='A')||(c>='0'&&c<='9')||c=='_'||c=='.') {
+				temp += c;
+				valid=1;
+			} else if(c == '\n' || c == '\t' || c == ' ') {
+				if(valid) {
+					temp+=' ';
+					valid=0;
+				}
+			} else if(c == '>' || c == '<' || c == '=') {
+				if(valid) {
+					temp += ' ';
+					temp += c;
+					temp += ' ';
+					valid=0;
+				} else {
+					if(temp[temp.length() - 2] == '>'|| temp[temp.length() - 2] == '<'|| temp[temp.length() - 2] == '=') {
+						temp[temp.length() - 1] = c;
+						temp += ' ';
+					} else {
+						temp += c;
+						temp += ' ';
+					}
+				}
+			} else if(c == '*' || c == ',' || c == '(' || c == ')') {
+				if(valid) {
+					temp += ' ';
+					temp += c;
+					temp += ' ';
+				} else {
+					temp += c;
+					temp += ' ';
+				}
+			} else if(c=='\'') {
+				temp += ' ';
+			} else if(c==';') {
+				if(valid) {
+					temp += ' ';
+					temp += c;
+				} else {
+					temp += c;
+				}
+				break;
+			} else {
+				cout<<"wrong input"<<endl;
+				while(cin.get() != ';') {
+					;
+				}
+				temp.clear();
+			}
+		}
+		if(flag==1)
+			break;
+		while(temp[start]==' ') {
+			start++;
+		}
+		querys = temp.substr(start, temp.length() - start);
+
+		cout<<"minisql>>>"<<querys<<endl;
+		if(querys.substr(0,6)=="create") {
+			EXEC_CREATE();
+		} else if(querys.substr(0,4)=="drop") {
+			EXEC_DROP();
+		} else if(querys.substr(0,6)=="select") {
+			EXEC_SELECT();
+		} else if(querys.substr(0,6)=="insert") {
+			EXEC_INSERT();
+		} else if(querys.substr(0,6)=="delete") {
+			EXEC_DELETE();
+		} else if(querys.substr(0,4)=="exit") {
+			EXEC_EXIT();
+		} else if(querys.substr(0,10)=="show table") {
+			EXEC_PRINT();
+		} else if (querys.substr(0, 8) == "execfile") {
+			EXEC_FILE();
+		} else {
+			cout<<"error!"<<endl;
+			//throw QueryException("ERROR: invalid query format!");
+		}
+	}
 }
 
 bool InverttoInt(string s, int& x) {
