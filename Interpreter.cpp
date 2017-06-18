@@ -605,7 +605,8 @@ void EXEC_FILE() {
 	string filename;
 	string temp;
 	char c;
-	int valid=0,flag=0;
+	int valid=0;
+	bool end=false;
 	int start;
 
 	is>>filename;
@@ -616,11 +617,11 @@ void EXEC_FILE() {
 	}
 	while(!in.eof()) {
 		querys.clear();
-		flag=0;
+		end=false;
 		while(true) {
 			c=in.get();
 			if(c==EOF) {
-				flag=1;
+				end=true;
 				break;
 			}
 
@@ -674,7 +675,7 @@ void EXEC_FILE() {
 				temp.clear();
 			}
 		}
-		if(flag==1)
+		if(end)
 			break;
 		while(temp[start]==' ') {
 			start++;
