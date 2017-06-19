@@ -3,8 +3,6 @@
 #include<sstream>
 #include<fstream>
 #include<vector>
-#include"Basis.h"
-#include"TableStruct.h"
 #include"Catalog.h"
 
 using namespace std;
@@ -59,7 +57,7 @@ Catalog::~Catalog() {
 	cat_index.clear();
 }
 
-bool Catalog::InverttoInt(string s, int& x) {
+bool Catalog::invertToInt(string s, int& x) {
 	int i;
 	x = 0;
 	for(i=0; i<s.length(); i++) {
@@ -81,13 +79,13 @@ void Catalog::mapTable() {
 		str=bufCat.substr(pos,bufCat.length()-pos);
 		is.str(str);
 		is>>s;
-		if(!InverttoInt(s,position)) {
+		if(!invertToInt(s,position)) {
 			//errror condition
 			return ;
 		}
 		pos=position+s.size();
 		is>>s;
-		if(!InverttoInt(s,length)) {
+		if(!invertToInt(s,length)) {
 			//errror condition
 			return ;
 		}
@@ -158,8 +156,6 @@ void Catalog::addTable(TableStruct& table) {
 	os<<' ';
 	os<<table.tupleNum;
 	os<<' ';
-	os<<table.tupleSize;
-	os<<' ';
 	os<<';';
 	os<<' ';
 	pos1=bufCat.size();
@@ -208,13 +204,15 @@ void Catalog::Print_T(TableStruct& table) {
 	cout<<' '<<table.tupleNum<<' '<<table.tupleSize<<endl;
 }
 
-TableStruct Catalog::getTable(const string& tablename) {
+TableStruct &Catalog::getTable(const string& tablename) {
 	if(!hasTable(tablename)) {
 		//error condition
 		cout<<"error! don't exit this table "<<tablename<<endl;
 	}
-	TableStruct table;
+	bool hasIndex;
+	size_t tupleNum;
 	int pos=cat[tablename];
+	vector<Attribute> attrs;
 	string str=bufCat.substr(pos,bufCat.length()-pos);
 	istringstream is(str);
 	string s;
@@ -222,10 +220,10 @@ TableStruct Catalog::getTable(const string& tablename) {
 
 	is>>s;
 	is>>s;
-	is>>table.tableName;
 	is>>s;
 	is>>s;
-	InverttoInt(s,i);
+	is>>s;
+	invertToInt(s,i);
 	for(; i>0; i--) {
 		Attribute* temp = new Attribute;
 		is>>temp->attrName;
@@ -233,34 +231,33 @@ TableStruct Catalog::getTable(const string& tablename) {
 		if(s=="-1")
 			temp->type=-1;
 		else {
-			InverttoInt(s,num);
+			invertToInt(s,num);
 			temp->type=num;
 		}
 		is>>s;
-		InverttoInt(s,num);
+		invertToInt(s,num);
 		temp->unique=num;
 		is>>s;
-		InverttoInt(s,num);
+		invertToInt(s,num);
 		temp->isIndex=num;
-		table.attrs.push_back(*temp);
+		attrs.push_back(*temp);
 	}
 	is>>s;
-	InverttoInt(s,num);
-	table.hasIndex=num;
+	invertToInt(s,num);
+	hasIndex=num;
 	is>>s;
-	InverttoInt(s,num);
-	table.tupleNum=num;
+	invertToInt(s,num);
+	tupleNum=num;
 	is>>s;
-	InverttoInt(s,num);
-	table.tupleSize=num;
 	is>>s;
 	if(s!=";") {
 		//error condition
 		cout<<"error! don't exit this table"<<endl;
 	}
-	Print_T(table);
+	TableStruct *table = new TableStruct(tablename,attrs,hasIndex,tupleNum);
+	Print_T(*table);
 
-	return table;
+	return *table;
 }
 
 void Catalog::writeback(TableStruct &table) {
@@ -273,10 +270,10 @@ void Catalog::writeback(TableStruct &table) {
 	int pos1,epos;
 
 	is>>s;
-	InverttoInt(s,pos_b);
+	invertToInt(s,pos_b);
 	pos1=pos_b;
 	is>>s;
-	InverttoInt(s,epos_b);
+	invertToInt(s,epos_b);
 	//cout<<"the normal pos_b is: "<<pos_b<<endl;
 	//cout<<"the normal epos_b is: "<<epos_b<<endl;
 	os.clear();
@@ -326,13 +323,13 @@ void Catalog::mapIndex() {
 		str=bufInd.substr(pos,bufInd.length()-pos);
 		is.str(str);
 		is>>s;
-		if(!InverttoInt(s,position)) {
+		if(!invertToInt(s,position)) {
 			//errror condition
 			return ;
 		}
 		pos=position+s.size();
 		is>>s;
-		if(!InverttoInt(s,length)) {
+		if(!invertToInt(s,length)) {
 			//errror condition
 			return ;
 		}
@@ -387,8 +384,7 @@ void Catalog::addIndex(const string& tablename, const string& indexname, const s
 		cout<<"this index has already exit"<<endl;
 		return ;
 	}
-	TableStruct table;
-	table=getTable(tablename);
+	TableStruct &table=getTable(tablename);
 	for(i=0; i<table.attrs.size(); i++) {
 		if(attriname==table.attrs[i].attrName) {
 			if(table.attrs[i].unique) {
@@ -438,7 +434,6 @@ void Catalog::deleteIndex(const string& indexname) {
 	string s,tablename,attrname;;
 	int position=pos;
 	int i;
-	TableStruct table;
 
 	is>>s;
 	position=position+s.size()+1;
@@ -453,7 +448,7 @@ void Catalog::deleteIndex(const string& indexname) {
 	is>>s;
 	is>>s;
 	is>>tablename;
-	table=getTable(tablename);
+	TableStruct &table=getTable(tablename);
 	is>>attrname;
 	for(i=0; i<table.attrs.size(); i++) {
 		if((table.attrs[i].attrName!=attrname)&&(table.attrs[i].isIndex))
