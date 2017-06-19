@@ -38,11 +38,13 @@ public:
     size_t blockMaxRecordCount;
 
 public:
-    TableStruct(string tableName, size_t tupleNum, vector<Attribute> attrs) : tableName(tableName), tupleNum(tupleNum),
-                                                                              attrs(attrs) {
+    TableStruct(string tableName, vector<Attribute> attrs, bool hasIndex, size_t tupleNum) : tableName(tableName),
+                                                                                             tupleNum(tupleNum),
+                                                                                             hasIndex(hasIndex),
+                                                                                             attrs(attrs) {
         tupleSize = 0;
         for (auto attr:attrs) {
-            switch(attr.type) {
+            switch (attr.type) {
                 case TYPE_FLOAT:
                 case TYPE_INT:
                     tupleSize += 4;
