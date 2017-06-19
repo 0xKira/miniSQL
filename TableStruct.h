@@ -38,6 +38,9 @@ public:
     size_t blockMaxRecordCount;
 
 public:
+    TableStruct(){
+	};
+    
     TableStruct(string tableName, vector<Attribute> attrs, bool hasIndex, size_t tupleNum) : tableName(tableName),
                                                                                              tupleNum(tupleNum),
                                                                                              hasIndex(hasIndex),
