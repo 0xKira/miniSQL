@@ -93,7 +93,11 @@ void Catalog::mapTable() {
 		}
 		pos=pos+length+s.size()+2;
 		is>>tablename;
-		cat.insert(pair<string,int>(tablename,position));
+		is>>s;
+		if(s=="1") {
+			cout<<"map this table named "<<tablename<<endl;
+			cat.insert(pair<string,int>(tablename,position));
+		}
 	}
 }
 
@@ -104,18 +108,16 @@ bool Catalog::hasTable(const string& tablename) {
 		pos=cat[tablename];
 	else
 		return false;
+	cout<<pos<<endl;
 	string str=bufCat.substr(pos,bufCat.length()-pos);
 	istringstream is(str);
 	string s;
 
 	is>>s;
-	cout<<"the posotion of this table is "<<s<<endl;
 	is>>s;
-	cout<<"the length of this table is "<<s<<endl;
 	is>>s;
-	cout<<"the name of this table is "<<s<<endl;
 	is>>s;
-	cout<<"the valid of this table is "<<s<<endl;
+	//cout<<"the valid of this table is "<<s<<endl;
 	if(s=="1") {
 		return true;
 	} else if(s=="0")
@@ -133,6 +135,7 @@ void Catalog::addTable(TableStruct& table) {
 	if(hasTable(table.tableName)) {
 		//error condtion
 		cout<<"this table has already exit!"<<endl;
+		return ;
 	}
 	os.clear();
 	os2.clear();
@@ -163,14 +166,85 @@ void Catalog::addTable(TableStruct& table) {
 	os2<<pos1<<' '<<epos<<' '<<os.str();
 	bufCat+=os2.str();
 	cat.insert(pair<string,int>(table.tableName,pos1));
+	cout<<"add this table successfully"<<endl;
 }
 
 void Catalog::deleteTable(const string& tablename) {
+	if(!hasTable(tablename)) {
+		//error condtion
+		cout<<"this table do not exit!"<<endl;
+		return ;
+	}
 
+	int pos=cat[tablename];
+	string str=bufCat.substr(pos,bufCat.length()-pos);
+	istringstream is(str);
+	string s;
+	int position=pos;
+
+	is>>s;
+	position=position+s.size()+1;
+	is>>s;
+	position=position+s.size()+1;
+	is>>s;
+	position=position+s.size()+1;
+	cout<<"before:the valid of this table is "<<bufCat[position]<<endl;
+	bufCat[position]='0';
+	cout<<"after:the valid of this table is "<<bufCat[position]<<endl;
+	cat.erase(tablename);
+	cout<<"delete this table successfully"<<endl;
+}
+
+void Catalog::Print_T(TableStruct& table) {
+	int i;
+
+	cout<<"show this table: "<<table.tableName<<" "<<table.hasIndex<<endl;
+
+	for(i=0; i<table.attrs.size(); i++) {
+		cout<<table.attrs[i].attrName<<' '<<table.attrs[i].type<<' ';
+		cout<<table.attrs[i].unique<<' '<<table.attrs[i].isIndex<<endl;
+	}
 }
 
 TableStruct Catalog::getTable(const string& tablename) {
+	if(!hasTable(tablename)) {
+		//error condition
+		cout<<"error! don't exit this table"<<endl;
+	}
+	TableStruct table;
+	int pos=cat[tablename];
+	string str=bufCat.substr(pos,bufCat.length()-pos);
+	istringstream is(str);
+	string s;
+	int i,num;
 
+	is>>s;
+	is>>s;
+	is>>table.tableName;
+	is>>s;
+	is>>s;
+	InverttoInt(s,i);
+	for(; i>0; i--) {
+		Attribute* temp = new Attribute;
+		is>>temp->attrName;
+		is>>s;
+		if(s=="-1")
+			temp->type=-1;
+		else {
+			InverttoInt(s,num);
+			temp->type=num;
+		}
+		is>>s;
+		InverttoInt(s,num);
+		temp->unique=num;
+		is>>s;
+		InverttoInt(s,num);
+		temp->isIndex=num;
+		table.attrs.push_back(*temp);
+	}
+	Print_T(table);
+
+	return table;
 }
 
 void Catalog::addIndex(const string& tablename, const string& indexname, const string& attriname) {
