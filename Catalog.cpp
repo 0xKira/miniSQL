@@ -6,13 +6,14 @@
 #include"Basis.h"
 #include"TableStruct.h"
 #include"Catalog.h"
-#include"API.h"
 
 using namespace std;
 
-Catalog() {
+Catalog::Catalog() {
 	cat.clear();
 	cat_index.clear();
+	catFile="Cat.bin";
+	catIndFile="CatIndex.bin";
 	fstream fileC,fileInd;
 	fileC.open(catFile.c_str(),ios::in);
 	fileInd.open(catIndFile.c_str(),ios::in);
@@ -35,7 +36,7 @@ Catalog() {
 	}
 }
 
-~Catalog() {
+Catalog::~Catalog() {
 	fstream fileC,fileInd;
 
 	fileC.open(catFile.c_str(),ios::out);
@@ -58,7 +59,7 @@ Catalog() {
 	cat_index.clear();
 }
 
-bool InverttoInt(string s, int& x) {
+bool Catalog::InverttoInt(string s, int& x) {
 	int i;
 	x = 0;
 	for(i=0; i<s.length(); i++) {
@@ -70,7 +71,7 @@ bool InverttoInt(string s, int& x) {
 	return true;
 }
 
-void mapTable() {
+void Catalog::mapTable() {
 	string str;
 	istringstream is;
 	string s,tablename;
@@ -96,7 +97,7 @@ void mapTable() {
 	}
 }
 
-bool hasTable(const string& tablename) {
+bool Catalog::hasTable(const string& tablename) {
 	int pos;
 
 	if(cat.find(tablename)!=cat.end())
@@ -125,7 +126,7 @@ bool hasTable(const string& tablename) {
 	}
 }
 
-void addTable(TableStruct& table) {
+void Catalog::addTable(TableStruct& table) {
 	ostringstream os,os2;
 	int pos1,epos;
 
@@ -164,26 +165,22 @@ void addTable(TableStruct& table) {
 	cat.insert(pair<string,int>(table.tableName,pos1));
 }
 
-void deleteTable(const string& tablename) {
+void Catalog::deleteTable(const string& tablename) {
 
 }
 
-TableStruct getTable(const string& tablename) {
+TableStruct Catalog::getTable(const string& tablename) {
 
 }
 
-void addIndex(const string& tablename, const string& indexname, const string& attriname) {
+void Catalog::addIndex(const string& tablename, const string& indexname, const string& attriname) {
 
 }
 
-void mapIndex() {
+void Catalog::mapIndex() {
 
 }
 
-bool hasTable(const string& indexname) {
-
-}
-
-void deleteIndex(const string& indexname) {
+void Catalog::deleteIndex(const string& indexname) {
 
 }
