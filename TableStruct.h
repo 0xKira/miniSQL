@@ -8,10 +8,9 @@
 #include <vector>
 #include <string>
 
-using namespace std;
+extern size_t blockSize;
 
-const int TYPE_INT = 0;
-const int TYPE_FLOAT = -1;
+using namespace std;
 
 class Attribute {
 public:
@@ -36,6 +35,7 @@ public:
     bool hasIndex;
     size_t tupleNum;
     size_t tupleSize;
+    size_t blockMaxRecordCount;
 
 public:
     TableStruct() : tupleNum(0) {
@@ -55,6 +55,8 @@ public:
                     break;
             }
         }
+        // 一个block最多有几条记录
+        blockMaxRecordCount = blockSize / tupleSize;
     }
 };
 

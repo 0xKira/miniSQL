@@ -10,6 +10,9 @@
 
 using namespace std;
 
+const int TYPE_INT = 0;
+const int TYPE_FLOAT = -1;
+
 class Data {
 public:
     int type;
@@ -70,21 +73,29 @@ public:
 	bool operator>=(const DataS& n) { return !(*this < n); };
 };
 
-//class Tuple {
-//public:
-//	Tuple() {};
-//	~Tuple() {};
-//	vector<Data> data;
-//};
-typedef vector<Data *> Tuple;
+//typedef vector<Data *> Tuple;
+
+class Tuple {
+public:
+    vector<Data *> data;
+    ~Tuple() {
+        for (int i = 0; i < data.size(); i++)
+            delete data[i];
+    }
+};
 
 typedef enum {
     EQ, LEQ, L, GEQ, G, NEQ
 } CONDITION;
 
 class Condition {
-    Data d;
+public:
+    size_t attrIndex;
+    Data *d;
     CONDITION flag;
+    ~Condition() {
+        delete d;
+    }
 };
 
 class TableException: public std::exception{

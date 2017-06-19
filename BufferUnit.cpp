@@ -96,7 +96,7 @@ bool BufferUnit::readBlock(int blockIndexInFile, char *outBuffer) {
     return true;
 }
 
-bool BufferUnit::writeBlock(int blockIndexInFile, char *inBuffer) {
+bool BufferUnit::writeBlock(int blockIndexInFile, char const *inBuffer) {
     if (blockIndexInFile < 0 || blockIndexInFile >= blockIndexInBuffer.size()) {
         cerr << "block index error" << endl;
         return false;

@@ -64,7 +64,7 @@ bool BufferManager::createTable(const string &tableName) {
     return true;
 }
 
-bool BufferManager::deleteTable(const string &tableName) {
+bool BufferManager::dropTable(const string &tableName) {
     // 删除文件
     string fileName = "./data/" + tableName + ".data";
     if (remove(fileName.c_str())) {
@@ -89,7 +89,7 @@ bool BufferManager::readBlockData(const string &tableName, size_t blockIndexInFi
     return buffers[index].readBlock(blockIndexInFile, outBuffer);
 }
 
-bool BufferManager::writeBlockData(const string &tableName, size_t blockIndexInFile, char *inBuffer) {
+bool BufferManager::writeBlockData(const string &tableName, size_t blockIndexInFile, char const *inBuffer) {
     int index = getTableIndex(tableName);
     if (index == -1) {
         return false;

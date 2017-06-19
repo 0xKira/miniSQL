@@ -54,7 +54,7 @@ private:
     int getAvailableBlock();
 public:
     bool readBlock(int blockIndexInFile, char *outBuffer);
-    bool writeBlock(int blockIndexInFile, char *inBuffer);
+    bool writeBlock(int blockIndexInFile, char const *inBuffer);
     bool deleteLastBlock();
     bool enlargeFile();
     // 这里fileSize是0有问题吗？

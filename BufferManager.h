@@ -25,10 +25,10 @@ private:
 
 public:
     bool createTable(const string &tableName);
-    bool deleteTable(const string &tableName);  // 除了删除文件还需要释放程序中相关buffer管理结构内存
+    bool dropTable(const string &tableName);  // 除了删除文件还需要释放程序中相关buffer管理结构内存
     // 下面的blockIndex是指文件中的index
     bool readBlockData(const string &tableName, size_t blockIndexInFile, char *outBuffer);
-    bool writeBlockData(const string &tableName, size_t blockIndexInFile, char *inBuffer);
+    bool writeBlockData(const string &tableName, size_t blockIndexInFile, char const *inBuffer);
     bool deleteLastBlockOfFile(const string &tableName);
     bool enlargeFile(const string &tableName);
 
