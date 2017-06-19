@@ -38,9 +38,6 @@ public:
     size_t blockMaxRecordCount;
 
 public:
-    TableStruct() : tupleNum(0) {
-    };
-
     TableStruct(string tableName, size_t tupleNum, vector<Attribute> attrs) : tableName(tableName), tupleNum(tupleNum),
                                                                               attrs(attrs) {
         tupleSize = 0;
