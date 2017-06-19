@@ -247,14 +247,117 @@ TableStruct Catalog::getTable(const string& tablename) {
 	return table;
 }
 
-void Catalog::addIndex(const string& tablename, const string& indexname, const string& attriname) {
+void Catalog::mapIndex() {
+	string str;
+	istringstream is;
+	string s,indexname;
+	int pos=0,length,position;
 
+	while(pos<bufInd.length()) {
+	    str=bufCat.substr(pos,bufCat.length()-pos);
+	    is.str(str);
+	    is>>s;
+		if(!InverttoInt(s,position)) {
+			//errror condition
+			return ;
+		}
+		pos=position+s.size();
+		is>>s;
+		if(!InverttoInt(s,length)) {
+			//errror condition
+			return ;
+		}
+		pos=pos+length+s.size()+2;
+	    is>>indexname;
+	    is>>s;
+		if(s=="1") {
+			cout<<"map this index named "<<indexname<<endl;
+			cat_index.insert(pair<string,int>(indexname,position));
+		}
+   }
 }
 
-void Catalog::mapIndex() {
+bool Catalog::hasIndex(const string& indexname) {
+	int pos;
+	
+	if(cat_index.find(indexname)!=cat_index.end())
+		pos=cat_index[indexname];
+	else
+		return false;
 
+    string str=bufInd.substr(pos,bufInd.length()-pos);
+	istringstream is(str);
+	string s;
+	
+	is>>s;
+	is>>s;
+	is>>s;
+	if(s!=indexname)
+	{
+		//errror condition
+		return false;
+	}
+	is>>s;
+	//cout<<"the valid of this table is "<<s<<endl;
+	if(s=="1") {
+		return true;
+	} else if(s=="0")
+		return false;
+	else {
+		//errror condition
+		return false;
+	}
+}
+
+void Catalog::addIndex(const string& tablename, const string& indexname, const string& attriname) {
+	ostringstream os,os2;
+	int pos1,epos;
+    int i;
+    
+	if(hasIndex(indexname)) {
+		//error condition
+		cout<<"this index has already exit"<<endl;
+		return ;
+	}
+	TableStruct table;
+	table=getTable(tablename);
+	for(i=0; i<table.attrs.size(); i++) {
+		if(attriname==table.attrs[i].attrName) {
+			if(table.attrs[i].unique)
+			{
+				if(table.attrs[i].isIndex)
+				{
+					cout<<"there is a index in this attributr"<<endl;
+					return ;
+				}
+				else
+				{
+					//add the index
+					break;
+				}
+			}
+			else
+			{
+				cout<<"this attributr is not unique"<<endl;
+				return ;
+			}
+		}
+	}
+	if(i>=table.attrs.size())
+	{
+		//errror posotion
+		cout<<"error!"<<endl;
+		return ;
+	}		
+	pos1=bufInd.size();
+	os<<indexname<<' '<<true<<' '<<tablename<<' '<<attriname<<';';
+	epos=os.str().size();
+	os2<<pos1<<' '<<epos<<' '<<os.str();
+	bufInd+=os2.str();
+	cat_index.insert(pair<string,int>(indexname,pos1));
+	cout<<"add this index successfully"<<endl;
 }
 
 void Catalog::deleteIndex(const string& indexname) {
-
+    
 }
