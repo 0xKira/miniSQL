@@ -191,7 +191,7 @@ void Catalog::deleteTable(const string& tablename) {
 	cat.erase(tablename);
 	cout<<"delete this table successfully"<<endl;
 }
-
+/*
 void Catalog::Print_T(TableStruct& table) {
 	int i;
 
@@ -201,9 +201,9 @@ void Catalog::Print_T(TableStruct& table) {
 		cout<<table.attrs[i].attrName<<' '<<table.attrs[i].type<<' ';
 		cout<<table.attrs[i].unique<<' '<<table.attrs[i].isIndex<<endl;
 	}
-	cout<<' '<<table.tupleNum<<' '<<table.tupleSize<<endl;
+	cout<<' '<<table.tupleNum<<endl;
 }
-
+*/
 TableStruct &Catalog::getTable(const string& tablename) {
 	if(!hasTable(tablename)) {
 		//error condition
@@ -249,13 +249,13 @@ TableStruct &Catalog::getTable(const string& tablename) {
 	invertToInt(s,num);
 	tupleNum=num;
 	is>>s;
-	is>>s;
 	if(s!=";") {
 		//error condition
 		cout<<"error! don't exit this table"<<endl;
 	}
+	//TableStruct *table = new TableStruct(tablename,attrs,hasIndex,tupleNum);
 	TableStruct *table = new TableStruct(tablename,attrs,hasIndex,tupleNum);
-	Print_T(*table);
+	//Print_T(*table);
 
 	return *table;
 }
@@ -297,8 +297,6 @@ void Catalog::writeback(TableStruct &table) {
 	os<<table.hasIndex;
 	os<<' ';
 	os<<table.tupleNum;
-	os<<' ';
-	os<<table.tupleSize;
 	os<<' ';
 	os<<';';
 	os<<' ';
@@ -416,7 +414,7 @@ void Catalog::addIndex(const string& tablename, const string& indexname, const s
 	if(table.hasIndex==false) {
 		table.hasIndex=true;
 	}
-	Print_T(table);
+	//Print_T(table);
 	writeback(table);
 	cout<<"add this index successfully"<<endl;
 }
