@@ -14,7 +14,7 @@ class Catalog {
 		bool hasTable(const string& tablename);
 		void addTable(TableStruct& table);
 		void deleteTable(const string& tablename);
-		TableStruct getTable(const string& tablename);
+		TableStruct &getTable(const string& tablename);
 		void mapIndex();
 		bool hasIndex(const string& indexname);
 		void addIndex(const string& tablename, const string& indexname, const string& attriname);
@@ -28,8 +28,8 @@ class Catalog {
 		string catFile;
 		string catIndFile;
 	private:
-		bool InverttoInt(string s, int& x);
-		void Print_T(TableStruct &table);
+		bool invertToInt(string s, int& x);
+		//void Print_T(TableStruct &table);
 		void writeback(TableStruct &table);
 };
 
