@@ -108,7 +108,6 @@ bool Catalog::hasTable(const string& tablename) {
 		pos=cat[tablename];
 	else
 		return false;
-	cout<<pos<<endl;
 	string str=bufCat.substr(pos,bufCat.length()-pos);
 	istringstream is(str);
 	string s;
@@ -160,7 +159,9 @@ void Catalog::addTable(TableStruct& table) {
 	os<<table.tupleNum;
 	os<<' ';
 	os<<table.tupleSize;
+	os<<' ';
 	os<<';';
+	os<<' ';
 	pos1=bufCat.size();
 	epos=os.str().size();
 	os2<<pos1<<' '<<epos<<' '<<os.str();
@@ -188,9 +189,9 @@ void Catalog::deleteTable(const string& tablename) {
 	position=position+s.size()+1;
 	is>>s;
 	position=position+s.size()+1;
-	cout<<"before:the valid of this table is "<<bufCat[position]<<endl;
+	//cout<<"before:the valid of this table is "<<bufCat[position]<<endl;
 	bufCat[position]='0';
-	cout<<"after:the valid of this table is "<<bufCat[position]<<endl;
+	//cout<<"after:the valid of this table is "<<bufCat[position]<<endl;
 	cat.erase(tablename);
 	cout<<"delete this table successfully"<<endl;
 }
@@ -210,7 +211,7 @@ void Catalog::Print_T(TableStruct& table) {
 TableStruct Catalog::getTable(const string& tablename) {
 	if(!hasTable(tablename)) {
 		//error condition
-		cout<<"error! don't exit this table"<<endl;
+		cout<<"error! don't exit this table "<<tablename<<endl;
 	}
 	TableStruct table;
 	int pos=cat[tablename];
@@ -262,19 +263,22 @@ TableStruct Catalog::getTable(const string& tablename) {
 	return table;
 }
 
-void Catalog::writeback(TableStruct &table)
-{
+void Catalog::writeback(TableStruct &table) {
 	int pos=cat[table.tableName];
 	string str=bufCat.substr(pos,bufCat.length()-pos);
 	istringstream is(str);
 	string s;
 	ostringstream os,os2;
-	int pos_b,epos_b;
+	int pos_b=0,epos_b=0;
+	int pos1,epos;
 
-    is>>s;
-    InverttoInt(s,pos_b);
-    is>>s;
-    InverttoInt(s,epos_b);
+	is>>s;
+	InverttoInt(s,pos_b);
+	pos1=pos_b;
+	is>>s;
+	InverttoInt(s,epos_b);
+	//cout<<"the normal pos_b is: "<<pos_b<<endl;
+	//cout<<"the normal epos_b is: "<<epos_b<<endl;
 	os.clear();
 	os2.clear();
 	os<<table.tableName;
@@ -298,14 +302,17 @@ void Catalog::writeback(TableStruct &table)
 	os<<table.tupleNum;
 	os<<' ';
 	os<<table.tupleSize;
+	os<<' ';
 	os<<';';
-	if(epos_b!=os.str().size())
-	{
+	os<<' ';
+	epos=os.str().size();
+	os2<<pos1<<' '<<epos<<' '<<os.str();
+	//cout<<"the now pos1 is: "<<pos1<<endl;
+	//cout<<"the now epos is: "<<epos<<endl;
+	if(epos_b!=epos) {
 		cout<<"the wrong length of the new table"<<endl;
-	}
-	else
-	{
-	    bufCat.replace(pos_b,epos_b,os.str());
+	} else {
+		bufCat.replace(pos_b,os2.str().size(),os2.str());
 	}
 }
 
@@ -413,6 +420,7 @@ void Catalog::addIndex(const string& tablename, const string& indexname, const s
 	if(table.hasIndex==false) {
 		table.hasIndex=true;
 	}
+	Print_T(table);
 	writeback(table);
 	cout<<"add this index successfully"<<endl;
 }
