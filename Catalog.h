@@ -10,10 +10,13 @@ class Catalog {
 	public:
 		Catalog();
 		~Catalog();
-		void addTable(TableStruct& tableinfo);
+		void maptable();
 		bool hasTable(const string& tablename);
+		void addTable(TableStruct& table);
 		void deleteTable(const string& tablename);
 		TableStruct getTable(const string& tablename);
+		void mapIndex();
+		bool hasIndex(const string& indexname);
 		void addIndex(const string& tablename, const string& indexname, const string& attriname);
 		void deleteIndex(const string& indexname);
 
@@ -24,6 +27,8 @@ class Catalog {
 		map<string, int> cat_index;
 		string catFile="Cat.bin";
 		string catIndFile="CatIndex.bin";
+	private:
+		bool InverttoInt(string s, int& x);
 };
 
 #endif /* Catalog_h */
