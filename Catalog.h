@@ -19,7 +19,7 @@ class Catalog {
 		bool hasIndex(const string& indexname);
 		void addIndex(const string& tablename, const string& indexname, const string& attriname);
 		void deleteIndex(const string& indexname);
-        
+
 	public:
 		string bufCat;
 		string bufInd;
@@ -30,6 +30,7 @@ class Catalog {
 	private:
 		bool InverttoInt(string s, int& x);
 		void Print_T(TableStruct &table);
+		void writeback(TableStruct &table);
 };
 
 #endif /* Catalog_h */
