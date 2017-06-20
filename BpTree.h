@@ -8,7 +8,7 @@ using namespace std;
 class BpTree
 {
 public:
-	int size, type;
+	int size, type, root;
 	string tableName, indexName;
 	char* buf;
 public:
@@ -18,4 +18,8 @@ public:
 	void initialize(Data* data);
 	int find(Data* data);
 	void insert(Data* data, int pos);
+	void insertInParent(char* node, float data, char* newNode);
+	void insertInParent(char* node, int data, char* newNode);
+	void insertInParent(char* node, char* data, char* newNode, int length);
+	void saveToBuf(char* node);
 };

@@ -3,7 +3,7 @@
 #include <fstream>
 using namespace std;
 #define NODESIZE 1024
-#define HEADLEN 17
+#define HEADLEN 13
 
 BpTree::BpTree(const TableStruct& table, const string& index, const Attribute& attr) :
 	tableName(table.tableName),
@@ -18,7 +18,7 @@ BpTree::BpTree(const TableStruct& table, const string& index, const Attribute& a
 		buf = "";
 		indexFile.open(filename, ios::out);
 		indexFile << table.tableName << endl;
-		indexFile << attr.type << endl;
+		indexFile << attr.type << " " << 0 << endl;
 	}
 	else
 		throw TableException("Index exists!");
@@ -38,7 +38,7 @@ BpTree::BpTree(const string & index) : indexName(index)
 		string tableName, temp;
 		short type;
 		indexFile >> tableName;
-		indexFile >> type;
+		indexFile >> type >> root;
 		size_t moduleSize = 4;
 		if (type < 1) moduleSize += 4; else moduleSize += type;
 		indexFile >> temp;
@@ -54,7 +54,7 @@ BpTree::~BpTree()
 	string filename("./data" + indexName + ".index");
 	fstream indexFile(filename, ios::out);
 	indexFile << tableName << endl;
-	indexFile << type << endl;
+	indexFile << type << " " << root << endl;
 	indexFile << buf << endl;
 	indexFile.close;
 }
@@ -63,6 +63,9 @@ void BpTree::initialize(Data* data)
 {
 	buf = (char*)malloc(sizeof(char)*NODESIZE);
 	size++;
+	size_t moduleSize = 4;
+	int keyPos, i;
+	if (type < 1) moduleSize += 4; else moduleSize += type;
 	buf[0] = 1;				//leaf node
 	*(int*)(buf + 1) = 0;	//node pos
 	*(int*)(buf + 5) = -1;	//father pos
@@ -74,14 +77,15 @@ void BpTree::initialize(Data* data)
 		*(int*)(buf + HEADLEN) = ((DataI*)data)->x;
 	else
 		memcpy(buf + HEADLEN, &(((DataS*)data)->x), type*sizeof(char));
+	*(int*)(buf + HEADLEN + moduleSize) = -1;	//next node pos
 }
 
 int BpTree::find(Data * data)
 {
 	char* currentNode = new char[NODESIZE];
-	memcpy(currentNode, buf, NODESIZE);
-	bool ifLeaf = (bool)buf[0];
-	int keyNum = *(int*)(buf + 9);
+	memcpy(currentNode, buf + root*NODESIZE, NODESIZE);
+	bool ifLeaf = (bool)currentNode[0];
+	int keyNum = *(int*)(currentNode + 9);
 	size_t moduleSize = 4;
 	int keyPos, i;
 	if (type < 1) moduleSize += 4; else moduleSize += type;
@@ -108,8 +112,8 @@ int BpTree::find(Data * data)
 		int position = *(int*)(currentNode + keyPos);
 		if (position = -1) return -1;
 		memcpy(currentNode, buf + position * NODESIZE, NODESIZE);
-		ifLeaf = (bool)buf[0];
-		keyNum = *(int*)(buf + 9);
+		ifLeaf = (bool)currentNode[0];
+		keyNum = *(int*)(currentNode + 9);
 	}
 	for (i = 0; i < keyNum; i++)
 	{
@@ -139,7 +143,7 @@ int BpTree::find(Data * data)
 	delete[] currentNode;
 	return -1;
 }
-
+//buf Ã»ÓÐ¼°Ê±¸üÐÂ°¡°¡°¡°¡°¡°¡°¡°¡°¡°¡°¡
 void BpTree::insert(Data * data, int pos)
 {
 	if (size == 0)
@@ -147,6 +151,315 @@ void BpTree::insert(Data * data, int pos)
 	else
 	{
 		size++;
-
+		char* currentNode = new char[NODESIZE];
+		memcpy(currentNode, buf, NODESIZE);
+		bool ifLeaf = (bool)buf[0];
+		int keyNum = *(int*)(buf + 9);
+		size_t moduleSize = 4;
+		int keyPos, i;
+		if (type < 1) moduleSize += 4; else moduleSize += type;
+		while (!ifLeaf)
+		{
+			for (i = 0; i < keyNum; i++)
+			{
+				int valuePos = HEADLEN + i * moduleSize + 4;
+				int keyPos = valuePos - 4;
+				if (type == -1 && ((DataF*)data)->x < *(float*)(currentNode + valuePos))
+					break;
+				if (type == 0 && ((DataI*)data)->x < *(int*)(currentNode + valuePos))
+					break;
+				if (type > 0)
+				{
+					char* tempString = new char[type];
+					memcpy(tempString, currentNode + valuePos, type);
+					if (((DataS*)data)->x.compare(tempString) < 0)
+						break;
+				}
+			}
+			if (i == keyNum)
+				keyPos += moduleSize;
+			int position = *(int*)(currentNode + keyPos);
+			if (position = -1)
+			{
+				char* newNode = new char[NODESIZE];
+				newNode[0] = 1;
+				*(int*)(newNode + 1) = size++;
+				*(int*)(newNode + 5) = *(int*)(currentNode + 1);
+				*(int*)(newNode + 9) = 1;
+				*(int*)(newNode + 13) = 0;
+				if (type = -1) *(float*)(newNode + HEADLEN) = ((DataF*)data)->x;
+				if (type = 0) *(int*)(newNode + HEADLEN) = ((DataI*)data)->x;
+				if (type > 0) memcpy(newNode + HEADLEN, &(((DataS*)data)->x), type * sizeof(char));
+				*(int*)(newNode + HEADLEN + moduleSize) = -1;
+				*(int*)(currentNode + keyPos) = size - 1;
+			}
+			memcpy(currentNode, buf + position * NODESIZE, NODESIZE);
+			ifLeaf = (bool)currentNode[0];
+			keyNum = *(int*)(currentNode + 9);
+		}
+		int capacity = (NODESIZE - 4 - HEADLEN) / moduleSize;
+		if (keyNum < capacity)
+		{
+			(*(int*)(currentNode + 9))++;
+			if (type == -1)
+			{
+				int i;
+				for (i = 0; ((DataF*)data)->x < *(float*)(currentNode + HEADLEN + i*moduleSize + 4); i++);
+				for (int j = keyNum; j > i; j--)
+					memcpy(currentNode + HEADLEN + j*moduleSize, currentNode + HEADLEN + (j - 1)*moduleSize, moduleSize);
+				*(int*)(currentNode + HEADLEN + i*moduleSize) = pos;
+				*(float*)(currentNode + HEADLEN + i*moduleSize + 4) = ((DataF*)data)->x;
+			}
+			if (type == 0)
+			{
+				int i;
+				for (i = 0; ((DataI*)data)->x < *(int*)(currentNode + HEADLEN + i*moduleSize + 4); i++);
+				for (int j = keyNum; j > i; j--)
+					memcpy(currentNode + HEADLEN + j*moduleSize, currentNode + HEADLEN + (j - 1)*moduleSize, moduleSize);
+				*(int*)(currentNode + HEADLEN + i*moduleSize) = pos;
+				*(int*)(currentNode + HEADLEN + i*moduleSize + 4) = ((DataI*)data)->x;
+			}
+			if (type > 0)
+			{
+				char* tempString = new char[type];
+				memcpy(tempString, currentNode + HEADLEN + 4, type);
+				int i;
+				for (i = 0; ((DataS*)data)->x.compare(tempString) < 0; i++)
+					memcpy(tempString, currentNode + HEADLEN + i*moduleSize, type);
+				for (int j = keyNum; j > i; j--)
+					memcpy(currentNode + HEADLEN + j*moduleSize, currentNode + HEADLEN + (j - 1)*moduleSize, moduleSize);
+				*(int*)(currentNode + HEADLEN + i*moduleSize) = pos;
+				memcpy(currentNode + HEADLEN + i*moduleSize + 4, &((DataS*)data)->x, type * sizeof(char));
+			}
+		}
+		else
+		{
+			char* newNode = new char[NODESIZE];
+			char* tempNode = new char[NODESIZE * 2];
+			for (int i = 0; i < capacity; i++)
+				memcpy(tempNode + i*moduleSize, currentNode + HEADLEN + i*moduleSize, moduleSize);
+			if (type == -1)
+			{
+				int i;
+				for (i = 0; ((DataF*)data)->x < *(float*)(tempNode + i*moduleSize + 4); i++);
+				for (int j = keyNum; j > i; j--)
+					memcpy(tempNode + j*moduleSize, tempNode + (j - 1)*moduleSize, moduleSize);
+				*(int*)(tempNode + i*moduleSize) = pos;
+				*(float*)(tempNode + i*moduleSize + 4) = ((DataF*)data)->x;
+			}
+			if (type == 0)
+			{
+				int i;
+				for (i = 0; ((DataI*)data)->x < *(int*)(tempNode + i*moduleSize + 4); i++);
+				for (int j = keyNum; j > i; j--)
+					memcpy(tempNode + j*moduleSize, tempNode + (j - 1)*moduleSize, moduleSize);
+				*(int*)(tempNode + i*moduleSize) = pos;
+				*(int*)(tempNode + i*moduleSize + 4) = ((DataI*)data)->x;
+			}
+			if (type > 0)
+			{
+				char* tempString = new char[type];
+				memcpy(tempString, tempNode + 4, type);
+				int i;
+				for (i = 0; ((DataS*)data)->x.compare(tempString) < 0; i++)
+					memcpy(tempString, tempNode + i*moduleSize, type);
+				for (int j = keyNum; j > i; j--)
+					memcpy(tempNode + j*moduleSize, tempNode + (j - 1)*moduleSize, moduleSize);
+				*(int*)(tempNode + i*moduleSize) = pos;
+				memcpy(tempNode + i*moduleSize + 4, &((DataS*)data)->x, type * sizeof(char));
+			}
+			newNode[0] = 1;
+			*(int*)(newNode + 1) = size++;
+			*(int*)(newNode + 5) = *(int*)(currentNode + 5);
+			*(int*)(newNode + 9) = *(int*)(currentNode + 9) = capacity / 2;
+			memcpy(newNode + HEADLEN + capacity*moduleSize, currentNode + HEADLEN + capacity*moduleSize, 4);
+			memcpy(currentNode + HEADLEN + capacity*moduleSize, newNode + 1, 4);
+			memset(currentNode + HEADLEN, 0, NODESIZE - HEADLEN);
+			memcpy(currentNode + HEADLEN, tempNode, (capacity / 2)*moduleSize);
+			memcpy(newNode + HEADLEN, tempNode + (capacity / 2)*moduleSize, (capacity - capacity / 2)*moduleSize);
+			if (type == -1)
+				insertInParent(currentNode, *(float*)(tempNode + (capacity / 2)*moduleSize + 4), newNode);
+			if (type == 0)
+				insertInParent(currentNode, *(int*)(tempNode + (capacity / 2)*moduleSize + 4), newNode);
+			if (type > 0)
+			{
+				char* tempString = new char[type];
+				memcpy(tempString, (tempNode + (capacity / 2)*moduleSize + 4), type);
+				insertInParent(currentNode, tempString, newNode, type);
+			}
+		}
 	}
 }
+
+void BpTree::insertInParent(char * node, float data, char* newNode)
+{
+	size_t moduleSize = 4;
+	int keyPos, i;
+	int capacity = (NODESIZE - 4 - HEADLEN) / moduleSize;
+	if (type < 1) moduleSize += 4; else moduleSize += type;
+	if (*(int*)(node + 5) == -1)
+	{
+		char* tempNode = new char[NODESIZE];
+		tempNode[0] = 0;//non-leaf
+		*(int*)(tempNode + 1) = size++;
+		*(int*)(tempNode + 5) = -1;
+		root = size - 1;
+		*(int*)(tempNode + 9) = 1;
+		*(int*)(tempNode + HEADLEN) = *(int*)(node + 1);
+		*(float*)(tempNode + HEADLEN + 4) = data;
+		*(int*)(tempNode + HEADLEN + moduleSize) = *(int*)(newNode + 1);
+		saveToBuf(tempNode);
+		delete[] tempNode;
+		return;
+	}
+	int p = *(int*)(node + 5);
+	char* parent = new char[NODESIZE];
+	memcpy(parent, buf + p*NODESIZE, NODESIZE);
+	int& keyNum = *(int*)(parent + 9);
+	if (keyNum < capacity)
+	{
+		*(float*)(parent + HEADLEN + (keyNum++) *moduleSize + 4) = data;
+		*(int*)(parent + HEADLEN + keyNum*moduleSize) = *(int*)(newNode + 1);
+		saveToBuf(parent);
+		delete[] parent;
+	}
+	else
+	{
+		char* tempNode = new char[NODESIZE * 2];
+		memcpy(tempNode, parent + HEADLEN, capacity*moduleSize);
+		*(int*)(tempNode + capacity*moduleSize + 4) = data;
+		*(int*)(tempNode + (capacity + 1)*moduleSize) = *(int*)(newNode + 1);
+		memset(parent + HEADLEN, 0, NODESIZE - HEADLEN);
+		memcpy(parent + HEADLEN, tempNode, ((capacity / 2) - 1)*moduleSize + 4);
+		*(int*)(parent + 9) = capacity / 2 - 1;
+		char* nnNode = new char[NODESIZE];
+		nnNode[0] = 0;
+		*(int*)(nnNode + 1) = size++;
+		*(int*)(nnNode + 5) = *(int*)(parent + 5);
+		*(int*)(nnNode + 9) = capacity - capacity / 2;
+		memcpy(nnNode + HEADLEN, tempNode + (capacity / 2)*moduleSize, ((capacity - capacity / 2)*moduleSize + 4));
+		float temp = *(float*)(tempNode + (capacity / 2)*moduleSize + 4);
+		saveToBuf(parent); saveToBuf(nnNode);
+		insertInParent(parent, temp, nnNode);
+		delete[] parent; delete[] nnNode;
+	}
+	return;
+}
+
+void BpTree::insertInParent(char* node, char* data, char* newNode, int length)
+{
+	size_t moduleSize = 4;
+	int keyPos, i;
+	int capacity = (NODESIZE - 4 - HEADLEN) / moduleSize;
+	if (type < 1) moduleSize += 4; else moduleSize += type;
+	if (*(int*)(node + 5) == -1)
+	{
+		char* tempNode = new char[NODESIZE];
+		tempNode[0] = 0;//non-leaf
+		*(int*)(tempNode + 1) = size++;
+		*(int*)(tempNode + 5) = -1;
+		root = size - 1;
+		*(int*)(tempNode + 9) = 1;
+		*(int*)(tempNode + HEADLEN) = *(int*)(node + 1);
+		memcpy(tempNode + HEADLEN + 4, data, length);
+		*(int*)(tempNode + HEADLEN + moduleSize) = *(int*)(newNode + 1);
+		saveToBuf(tempNode);
+		delete[] tempNode;
+		return;
+	}
+	int p = *(int*)(node + 5);
+	char* parent = new char[NODESIZE];
+	memcpy(parent, buf + p*NODESIZE, NODESIZE);
+	int& keyNum = *(int*)(parent + 9);
+	if (keyNum < capacity)
+	{
+		memcpy(parent + HEADLEN + (keyNum++) *moduleSize + 4, data, length);
+		*(int*)(parent + HEADLEN + keyNum*moduleSize) = *(int*)(newNode + 1);
+		saveToBuf(parent);
+		delete[] parent;
+	}
+	else
+	{
+		char* tempNode = new char[NODESIZE * 2];
+		memcpy(tempNode, parent + HEADLEN, capacity*moduleSize);
+		memcpy(tempNode + capacity*moduleSize + 4, data, length);
+		*(int*)(tempNode + (capacity + 1)*moduleSize) = *(int*)(newNode + 1);
+		memset(parent + HEADLEN, 0, NODESIZE - HEADLEN);
+		memcpy(parent + HEADLEN, tempNode, ((capacity / 2) - 1)*moduleSize + 4);
+		*(int*)(parent + 9) = capacity / 2 - 1;
+		char* nnNode = new char[NODESIZE];
+		nnNode[0] = 0;
+		*(int*)(nnNode + 1) = size++;
+		*(int*)(nnNode + 5) = *(int*)(parent + 5);
+		*(int*)(nnNode + 9) = capacity - capacity / 2;
+		memcpy(nnNode + HEADLEN, tempNode + (capacity / 2)*moduleSize, ((capacity - capacity / 2)*moduleSize + 4));
+		char* temp = new char[length];
+		memcpy(temp, tempNode + (capacity / 2)*moduleSize + 4, length);
+		saveToBuf(parent); saveToBuf(nnNode);
+		insertInParent(parent, temp, nnNode, length);
+		delete[] parent; delete[] nnNode; delete[] temp;
+	}
+	return;
+}
+
+void BpTree::insertInParent(char * node, int data, char* newNode)
+{
+	size_t moduleSize = 4;
+	int keyPos, i;
+	int capacity = (NODESIZE - 4 - HEADLEN) / moduleSize;
+	if (type < 1) moduleSize += 4; else moduleSize += type;
+	if (*(int*)(node + 5) == -1)
+	{
+		char* tempNode = new char[NODESIZE];
+		tempNode[0] = 0;//non-leaf
+		*(int*)(tempNode + 1) = size++;
+		*(int*)(tempNode + 5) = -1;
+		root = size - 1;
+		*(int*)(tempNode + 9) = 1;
+		*(int*)(tempNode + HEADLEN) = *(int*)(node + 1);
+		*(int*)(tempNode + HEADLEN + 4) = data;
+		*(int*)(tempNode + HEADLEN + moduleSize) = *(int*)(newNode + 1);
+		saveToBuf(tempNode);
+		delete[] tempNode;
+		return;
+	}
+	int p = *(int*)(node + 5);
+	char* parent = new char[NODESIZE];
+	memcpy(parent, buf + p*NODESIZE, NODESIZE);
+	int& keyNum = *(int*)(parent + 9);
+	if (keyNum < capacity)
+	{
+		*(int*)(parent + HEADLEN + (keyNum++) *moduleSize + 4) = data;
+		*(int*)(parent + HEADLEN + keyNum*moduleSize) = *(int*)(newNode + 1);
+		saveToBuf(parent);
+		delete[] parent;
+	}
+	else
+	{
+		char* tempNode = new char[NODESIZE * 2];
+		memcpy(tempNode, parent + HEADLEN, capacity*moduleSize);
+		*(int*)(tempNode + capacity*moduleSize + 4) = data;
+		*(int*)(tempNode + (capacity + 1)*moduleSize) = *(int*)(newNode + 1);
+		memset(parent + HEADLEN, 0, NODESIZE - HEADLEN);
+		memcpy(parent + HEADLEN, tempNode, ((capacity / 2) - 1)*moduleSize + 4);
+		*(int*)(parent + 9) = capacity / 2 - 1;
+		char* nnNode = new char[NODESIZE];
+		nnNode[0] = 0;
+		*(int*)(nnNode + 1) = size++;
+		*(int*)(nnNode + 5) = *(int*)(parent + 5);
+		*(int*)(nnNode + 9) = capacity - capacity / 2;
+		memcpy(nnNode + HEADLEN, tempNode + (capacity / 2)*moduleSize, ((capacity - capacity / 2)*moduleSize + 4));
+		int temp = *(float*)(tempNode + (capacity / 2)*moduleSize + 4);
+		saveToBuf(parent); saveToBuf(nnNode);
+		insertInParent(parent, temp, nnNode);
+		delete[] parent; delete[] nnNode;
+	}
+	return;
+}
+
+void BpTree::saveToBuf(char* node)
+{
+	memcpy(buf + *(int*)(node + 1)*NODESIZE, node, NODESIZE);
+	return;
+}
+
