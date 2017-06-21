@@ -25,4 +25,5 @@ public:
 	void deleteData(Data* data);
 	void deleteEntry(char* node, Data* data);
 	Data* findBrother(char* node, char* dest, bool& flag);
+	void replaceInParent(Data* k, char* node, char* newOne);
 };

@@ -500,8 +500,6 @@ void BpTree::deleteData(Data* data)
 		keyNum = *(int*)(currentNode + 9);
 	}
 	deleteEntry(currentNode, data);
-	saveToBuf(currentNode);
-	delete[] currentNode;
 }
 
 void BpTree::deleteEntry(char * node, Data * data)
@@ -533,6 +531,8 @@ void BpTree::deleteEntry(char * node, Data * data)
 		root = *(int*)(node + HEADLEN);
 		*(int*)(buf + root*NODESIZE + 5) = -1;
 		memset(node, 0, NODESIZE);
+		saveToBuf(node);
+		delete[] node;
 	}
 	else if (keyNum < capacity / 2)
 	{
@@ -540,9 +540,135 @@ void BpTree::deleteEntry(char * node, Data * data)
 		bool& ff = flag;
 		char* nNode = new char[NODESIZE];
 		Data* k = findBrother(node, nNode, ff);
-		if (*(int*)(node + 9) + *(int*)(node + 9) <= capacity)
+		if (*(int*)(node + 9) + *(int*)(nNode + 9) < capacity)
 		{
-
+			if (ff)
+			{
+				char* temp;
+				temp = nNode;
+				nNode = node;
+				node = temp;
+				delete[] temp;
+			}
+			if (!node[0])
+			{
+				int& nNum = *(int*)(nNode + 9);
+				if (type == -1) *(float*)(nNode + HEADLEN + nNum*moduleSize + 4) = ((DataF*)k)->x;
+				if (type == 0) *(int*)(nNode + HEADLEN + nNum*moduleSize + 4) = ((DataI*)k)->x;
+				if (type > 0) memcpy(nNode + HEADLEN + nNum*moduleSize + 4, &(((DataS*)k)->x), type * sizeof(char));
+				for (i = 0; i < *(int*)(node + 9); i++)
+					memcpy(nNode + HEADLEN + (nNum + 1 + i)*moduleSize, node + HEADLEN + i*moduleSize, moduleSize);
+				nNum += *(int*)(node + 9) + 1;
+				memcpy(nNode + HEADLEN + nNum*moduleSize, node + HEADLEN + *(int*)(node + 9)*moduleSize, 4);
+			}
+			else
+			{
+				for (i = 0; i < *(int*)(node + 9); i++)
+					memcpy(nNode + HEADLEN + (*(int*)(nNode+9) + i)*moduleSize, node + HEADLEN + i*moduleSize, moduleSize);
+				*(int*)(nNode + 9) += *(int*)(node + 9);
+				memcpy(nNode + HEADLEN + *(int*)(nNode + 9)*moduleSize, node + HEADLEN + *(int*)(node + 9)*moduleSize, 4);
+			}
+			char* parent = new char[NODESIZE];
+			memcpy(parent, buf + *(int*)(node + 5)*NODESIZE, NODESIZE);
+			saveToBuf(node); saveToBuf(nNode);
+			deleteEntry(parent, k);
+			memset(node, 0, NODESIZE);
+			saveToBuf(node); delete[] node; delete[] nNode;
+		}
+		else
+		{
+			if (!ff)
+			{
+				if (!node[0])
+				{
+					int& nnNum = *(int*)(nNode + 9);
+					int pos = *(int*)(nNode + HEADLEN + nnNum*moduleSize);
+					char* km = new char[10];
+					memcpy(km, (nNode + HEADLEN + (nnNum - 1)*moduleSize + 4), moduleSize - 4);
+					memset(nNode + HEADLEN + (nnNum - 1)*moduleSize + 4, 0, moduleSize);
+					nnNum--;
+					saveToBuf(nNode);
+					delete[] nNode;
+					*(int*)(node + HEADLEN + (*(int*)(node + 9) + 1)*moduleSize) = *(int*)(node + HEADLEN + *(int*)(node + 9)*moduleSize);
+					for (i = 0; i < *(int*)(node + 9); i++)
+						memcpy(node + HEADLEN + (i + 1)*moduleSize, node + HEADLEN + i*moduleSize, moduleSize);
+					*(int*)(node + HEADLEN) = pos;
+					if (type == -1) *(float*)(node + HEADLEN + 4) = ((DataF*)k)->x;
+					if (type == 0) *(int*)(node + HEADLEN + 4) = ((DataI*)k)->x;
+					if (type > 0) memcpy(node + HEADLEN + 4, &(((DataS*)k)->x), type * sizeof(char));
+					saveToBuf(node);
+					replaceInParent(k, node, km);
+					delete[] node; delete[] km;
+				}
+				else
+				{
+					int& nnNum = *(int*)(nNode + 9);
+					int pos = *(int*)(nNode + HEADLEN + nnNum*moduleSize);
+					char* km = new char[10];
+					char* temp = new char[moduleSize];
+					memcpy(temp, nNode + HEADLEN + (nnNum - 1)*moduleSize, moduleSize);
+					memcpy(km, (nNode + HEADLEN + (nnNum - 1)*moduleSize + 4), moduleSize - 4);
+					memcpy(nNode + HEADLEN + (nnNum - 1)*moduleSize, nNode + HEADLEN + nnNum*moduleSize, 4);
+					memset(nNode + HEADLEN + (nnNum - 1)*moduleSize + 4, 0, moduleSize);
+					nnNum--;
+					saveToBuf(nNode);
+					delete[] nNode;
+					*(int*)(node + HEADLEN + (*(int*)(node + 9) + 1)*moduleSize) = *(int*)(node + HEADLEN + *(int*)(node + 9)*moduleSize);
+					for (i = 0; i < *(int*)(node + 9); i++)
+						memcpy(node + HEADLEN + (i + 1)*moduleSize, node + HEADLEN + i*moduleSize, moduleSize);
+					memcpy(node + HEADLEN, temp, moduleSize);
+					saveToBuf(node);
+					delete[] temp;
+					replaceInParent(k, node, km);
+					delete[] node; delete[] km;
+				}
+			}
+			else
+			{
+				if (!nNode[0])
+				{
+					int& nNum = *(int*)(node + 9);
+					int pos = *(int*)(node + HEADLEN + nNum*moduleSize);
+					char* km = new char[10];
+					memcpy(km, (node + HEADLEN + (nNum - 1)*moduleSize + 4), moduleSize - 4);
+					memset(node + HEADLEN + (nNum - 1)*moduleSize + 4, 0, moduleSize);
+					nNum--;
+					saveToBuf(node);
+					delete[] node;
+					*(int*)(nNode + HEADLEN + (*(int*)(nNode + 9) + 1)*moduleSize) = *(int*)(nNode + HEADLEN + *(int*)(nNode + 9)*moduleSize);
+					for (i = 0; i < *(int*)(nNode + 9); i++)
+						memcpy(nNode + HEADLEN + (i + 1)*moduleSize, nNode + HEADLEN + i*moduleSize, moduleSize);
+					*(int*)(nNode + HEADLEN) = pos;
+					if (type == -1) *(float*)(nNode + HEADLEN + 4) = ((DataF*)k)->x;
+					if (type == 0) *(int*)(nNode + HEADLEN + 4) = ((DataI*)k)->x;
+					if (type > 0) memcpy(nNode + HEADLEN + 4, &(((DataS*)k)->x), type * sizeof(char));
+					saveToBuf(nNode);
+					replaceInParent(k, nNode, km);
+					delete[] nNode; delete[] km;
+				}
+				else
+				{
+					int& nNum = *(int*)(node + 9);
+					int pos = *(int*)(node + HEADLEN + nNum*moduleSize);
+					char* km = new char[10];
+					char* temp = new char[moduleSize];
+					memcpy(temp, node + HEADLEN + (nNum - 1)*moduleSize, moduleSize);
+					memcpy(km, (node + HEADLEN + (nNum - 1)*moduleSize + 4), moduleSize - 4);
+					memcpy(node + HEADLEN + (nNum - 1)*moduleSize, node + HEADLEN + nNum*moduleSize, 4);
+					memset(node + HEADLEN + (nNum - 1)*moduleSize + 4, 0, moduleSize);
+					nNum--;
+					saveToBuf(node);
+					delete[] node;
+					*(int*)(nNode + HEADLEN + (*(int*)(nNode + 9) + 1)*moduleSize) = *(int*)(nNode + HEADLEN + *(int*)(nNode + 9)*moduleSize);
+					for (i = 0; i < *(int*)(nNode + 9); i++)
+						memcpy(nNode + HEADLEN + (i + 1)*moduleSize, nNode + HEADLEN + i*moduleSize, moduleSize);
+					memcpy(nNode + HEADLEN, temp, moduleSize);
+					saveToBuf(nNode);
+					delete[] temp;
+					replaceInParent(k, node, km);
+					delete[] nNode; delete[] km;
+				}
+			}
 		}
 	}
 }
@@ -587,4 +713,31 @@ Data* BpTree::findBrother(char * node, char * dest, bool& flag)
 		delete[] parent; delete[] tempS;
 		return &temp;
 	}
+}
+
+void BpTree::replaceInParent(Data * k, char * node, char * newOne)
+{
+	size_t moduleSize = 4;
+	int keyPos, i;
+	if (type < 1) moduleSize += 4; else moduleSize += type;
+	int addr = *(int*)(node + 1);
+	int fatherPos = *(int*)(node + 5);
+	char* parent = new char[NODESIZE];
+	memcpy(parent, buf + fatherPos*NODESIZE, NODESIZE);
+	char* tempString = new char[256];
+	for (int i = 0; i < *(int*)(parent + 9); i++)
+	{
+		if (type == -1 && *(float*)(parent + HEADLEN + i*moduleSize + 4) == ((DataF*)k)->x ||
+			type == 0 && *(int*)(parent + HEADLEN + i*moduleSize + 4) == ((DataI*)k)->x)
+			break;
+		if (type > 0)
+		{
+			memcpy(tempString, parent + HEADLEN + i*moduleSize + 4, type);
+			if (((DataS*)k)->x.compare(tempString) == 0) break;
+		}
+	}
+	delete[] tempString;
+	memcpy(parent + HEADLEN + i*moduleSize + 4, newOne, moduleSize - 4);
+	saveToBuf(parent);
+	delete[] parent;
 }
