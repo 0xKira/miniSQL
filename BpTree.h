@@ -15,8 +15,9 @@ public:
 	BpTree(const TableStruct& table, const string& index, const Attribute& attr);
 	BpTree(const string& index);
 	~BpTree();
-	void initialize(Data* data);
+	void initialize(Data* data, int pos);
 	int find(Data* data);
+	vector<int> BpTree::range(Data * data, Data* up);
 	void insert(Data* data, int pos);
 	void insertInParent(char* node, float data, char* newNode);
 	void insertInParent(char* node, int data, char* newNode);

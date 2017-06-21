@@ -9,10 +9,10 @@ class IndexManager
 {
 	IndexManager() {};
 	~IndexManager() {};
-	void createIndex(const Attribute& attr, std::string indexName, const TableStruct& table);
-	void dropIndex(std::string indexName, const TableStruct& table);
-	vector<Tuple> exactSearchWithIndex(std::string tableName, std::string indexName, const Data& value);
-	vector<Tuple> rangeSearchWithIndex(std::string tableName, std::string indexName, const Data& down, const Data& up);
-	void insertNew(const Data& value);
-	void deleteOld(const Data& value);
+	void createIndex(const Attribute& attr, std::string indexName, TableStruct& table);
+	void dropIndex(std::string indexName, TableStruct& table);
+	int exactSearchWithIndex(std::string indexName, Data* value);
+	vector<int> rangeSearchWithIndex(std::string indexName, Data* down, Data* up);
+	void insertNew(string indexName, Data* value, int addr);
+	void deleteOld(string indexName, Data* value);
 };

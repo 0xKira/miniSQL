@@ -60,7 +60,7 @@ BpTree::~BpTree()
 	indexFile.close;
 }
 
-void BpTree::initialize(Data* data)
+void BpTree::initialize(Data* data, int pos)
 {
 	buf = (char*)malloc(sizeof(char)*NODESIZE);
 	size++;
@@ -71,7 +71,7 @@ void BpTree::initialize(Data* data)
 	*(int*)(buf + 1) = 0;	//node pos
 	*(int*)(buf + 5) = -1;	//father pos
 	*(int*)(buf + 9) = 1;	//key number
-	*(int*)(buf + 13) = 0;	//pos in table or child pos
+	*(int*)(buf + 13) = pos;	//pos in table or child pos
 	if (type == -1)
 		*(int*)(buf + HEADLEN) = ((DataF*)data)->x;
 	else if (type == 0)
@@ -144,11 +144,90 @@ int BpTree::find(Data * data)
 	delete[] currentNode;
 	return -1;
 }
+
+vector<int> BpTree::range(Data * data, Data* up)
+{
+	vector<int> arr;
+	char* currentNode = new char[NODESIZE];
+	memcpy(currentNode, buf + root*NODESIZE, NODESIZE);
+	bool ifLeaf = (bool)currentNode[0];
+	int keyNum = *(int*)(currentNode + 9);
+	size_t moduleSize = 4;
+	int keyPos, i;
+	if (type < 1) moduleSize += 4; else moduleSize += type;
+	while (!ifLeaf)
+	{
+		for (i = 0; i < keyNum; i++)
+		{
+			int valuePos = HEADLEN + i * moduleSize + 4;
+			int keyPos = valuePos - 4;
+			if (type == -1 && ((DataF*)data)->x < *(float*)(currentNode + valuePos))
+				break;
+			if (type == 0 && ((DataI*)data)->x < *(int*)(currentNode + valuePos))
+				break;
+			if (type > 0)
+			{
+				char* tempString = new char[type];
+				memcpy(tempString, currentNode + valuePos, type);
+				if (((DataS*)data)->x.compare(tempString) < 0)
+					break;
+			}
+		}
+		if (i == keyNum)
+			keyPos += moduleSize;
+		int position = *(int*)(currentNode + keyPos);
+		if (position = -1) return arr;
+		memcpy(currentNode, buf + position * NODESIZE, NODESIZE);
+		ifLeaf = (bool)currentNode[0];
+		keyNum = *(int*)(currentNode + 9);
+	}
+	while (true)
+	{
+		for (i = 0; i < keyNum; i++)
+		{
+			int valuePos = HEADLEN + i * moduleSize + 4;
+			int keyPos = valuePos - 4;
+			if (type == -1 && ((DataF*)data)->x <= *(float*)(currentNode + valuePos))
+					arr.push_back(*(int*)(currentNode + keyPos));
+			if (type == -1 && ((DataF*)up)->x > *(float*)(currentNode + valuePos))
+			{
+				delete[] currentNode;
+				return arr;
+			}
+			if (type == 0 && ((DataI*)data)->x <= *(int*)(currentNode + valuePos))
+				arr.push_back(*(int*)(currentNode + keyPos));
+			if (type == 0 && ((DataI*)up)->x > *(int*)(currentNode + valuePos))
+			{
+				delete[] currentNode;
+				return arr;
+			}
+			if (type > 0)
+			{
+				char* tempString = new char[type];
+				memcpy(tempString, currentNode + valuePos, type);
+				if (((DataS*)data)->x.compare(tempString) <= 0)
+				{
+					arr.push_back(*(int*)(currentNode + keyPos));
+				}
+				if (((DataS*)up)->x.compare(tempString) > 0)
+				{
+					delete[] currentNode;
+					return arr;
+				}
+			}
+		}
+		int position = *(int*)(currentNode + HEADLEN + *(int*)(currentNode+9)*moduleSize);
+		if (position = -1) return arr;
+		memcpy(currentNode, buf + position * NODESIZE, NODESIZE);
+	}
+	delete[] currentNode;
+	return arr;
+}
 //buf Ã»ÓÐ¼°Ê±¸üÐÂ°¡°¡°¡°¡°¡°¡°¡°¡°¡°¡°¡
 void BpTree::insert(Data * data, int pos)
 {
 	if (size == 0)
-		initialize(data);
+		initialize(data, pos);
 	else
 	{
 		char* currentNode = new char[NODESIZE];
