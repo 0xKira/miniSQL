@@ -477,32 +477,32 @@ Tuple Interpreter::TupleList(TableStruct &table, string where) {
     is >> s;
     if (s != "(") {
         //errror posotion
-        cout << "error! wrong SQL of values" << endl;
+        cout << "error! wrong SQL of values (" << endl;
     }
     for (i = 0; i < table.attrs.size(); i++) {
         is >> s;
         if (is == ")") {
             //errror posotion
-            cout << "error! wrong SQL of values" << endl;
+            cout << "error! wrong SQL of values )" << endl;
         }
         if ((table.attrs[i].type < 0) && (invertToFloat(s, f_type))) {
             Data *da = new DataF(f_type);
             tup.data.push_back(da);
-        } else if ((table.attrs[i].type < 0) && (invertToInt(s, i_type))) {
+        } else if ((table.attrs[i].type == 0) && (invertToInt(s, i_type))) {
             Data *da = new DataI(i_type);
-        } else if (table.attrs[i].type < 0) {
+        } else if (table.attrs[i].type > 0) {
             Data *da = new DataS(s);
         } else {
             //errror posotion
             cout << "error! " << endl;
         }
+        is>>s;
     }
-    is >> s;
     if (s == ")")
         return tup;
     else {
         //errror posotion
-        cout << "error! wrong SQL of values" << endl;
+        cout << "error! wrong SQL of values )" << endl;
     }
 }
 
@@ -521,17 +521,17 @@ void Interpreter::EXEC_INSERT() {
     is >> s;
     if (s != "into") {
         //errror posotion
-        cout << "error!" << endl;
+        cout << "error1!" << endl;
     }
     is >> tablename;
     if (!cm.hasTable(tablename)) {
         //errror posotion
-        cout << "error!" << endl;
+        cout << "error2!" << endl;
     }
     is >> s;
     if (s != "values") {
         //errror posotion
-        cout << "error!" << endl;
+        cout << "error3!" << endl;
     }
     for (start = 7; start < (querys.length() - 5); start++) {
         if (querys.substr(start, 6) == "values")
@@ -539,7 +539,9 @@ void Interpreter::EXEC_INSERT() {
     }
     values = querys.substr(start + 7, querys.length() - 7 - start);
 
+    //cout<<"gettable"<<endl;
     table = cm.getTable(tablename);
+    //cout<<"table has get"<<endl;
     onetuple.data.clear();
     onetuple = TupleList(table, values);
     //ap.insertData(tablename,onetuple.data);
