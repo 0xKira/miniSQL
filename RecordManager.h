@@ -9,7 +9,7 @@
 #include "TableStruct.h"
 #include "BufferManager.h"
 
-extern size_t blockSize;
+extern const size_t blockSize;
 extern BufferManager bm;
 
 class RecordManager {
@@ -30,9 +30,7 @@ public:
                                   vector<int> &range,
                                   vector<Tuple> &result);
     bool deleteFromTable(const TableStruct &table,
-                         const vector<Condition> &conditions,
-                         vector<Data &> &moved,
-                         vector<int> &deleted);
+                         const vector<Condition> &conditions);
     bool selectFromTable(const TableStruct &table,
                          const vector<Condition> &conditions,
                          vector<Tuple> &result);

@@ -104,8 +104,7 @@ RecordManager::selectFromTableWithIndex(const TableStruct &table, const vector<C
 }
 
 bool
-RecordManager::deleteFromTable(const TableStruct &table, const vector<Condition> &conditions, vector<Data &> &moved,
-                               vector<int> &deleted) {
+RecordManager::deleteFromTable(const TableStruct &table, const vector<Condition> &conditions) {
 
     return false;
 }
