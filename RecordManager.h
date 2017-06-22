@@ -19,7 +19,8 @@ private:
     bool isConditionSatisfied(const vector<Condition> &conditions, Tuple &t);
 public:
     RecordManager();
-    bool insertIntoTable(const Tuple &t, const TableStruct &table);
+
+    bool insertIntoTable(const TableStruct &table, const Tuple &t);
     bool deleteFromTableWithIndex(TableStruct &table,
                                   const vector<Condition> &conditions,
                                   vector<int> &range,

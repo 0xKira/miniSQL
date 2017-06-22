@@ -14,5 +14,9 @@ Catalog cm;
 Interpreter itp;
 
 int main() {
-
+    Tuple t;
+    t.data.push_back(new DataI(100));
+    t.data.push_back(new DataF(1.234));
+    t.data.push_back(new DataS("Kira!"));
+    rm.insertIntoTable(cm.getTable("aaaa"), t);
 }

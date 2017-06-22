@@ -9,7 +9,7 @@ RecordManager::RecordManager() {
 
 }
 
-bool RecordManager::insertIntoTable(const Tuple &t, const TableStruct &table) {
+bool RecordManager::insertIntoTable(const TableStruct &table, const Tuple &t) {
     // 一个block至多存几条记录
     size_t blockToInsert;
     char *buf = new char[blockSize];

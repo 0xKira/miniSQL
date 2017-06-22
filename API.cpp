@@ -33,7 +33,7 @@ vector<Tuple> API::select(string tableName, vector<Condition>& condTable)
 
 void API::insertData(string tableName, Tuple& tuple)
 {
-	rm.insertIntoTable(tuple, cm.getTable(tableName));
+    rm.insertIntoTable(cm.getTable(tableName), tuple);
 }
 
 void API::deleteData(string tableName, vector<Condition>& condTable)
