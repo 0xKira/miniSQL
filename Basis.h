@@ -82,6 +82,25 @@ public:
 class Tuple {
 public:
     vector<Data *> data;
+
+    Tuple() {
+    }
+
+    Tuple(const Tuple &t) {
+        for (auto tValue:t.data) {
+            switch (tValue->type) {
+                case TYPE_FLOAT:
+                    this->data.push_back(new DataF(dynamic_cast<DataF *>(tValue)->x));
+                    break;
+                case TYPE_INT:
+                    this->data.push_back(new DataI(dynamic_cast<DataI *>(tValue)->x));
+                    break;
+                default:
+                    this->data.push_back(new DataS(dynamic_cast<DataS *>(tValue)->x));
+                    break;
+            }
+        }
+    }
     ~Tuple() {
         for (int i = 0; i < data.size(); i++)
             delete data[i];
