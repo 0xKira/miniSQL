@@ -33,7 +33,7 @@ bool RecordManager::insertIntoTable(const Tuple &t, const TableStruct &table) {
 
 bool
 RecordManager::deleteFromTableWithIndex(TableStruct &table, const vector<Condition> &conditions,
-                                        const vector<int> &range, vector<Data &> &moved, vector<int> &deleted) {
+                                        vector<int> &range, vector<Data &> &moved, vector<int> &deleted) {
     // 第几个block，block中的第几条记录
     size_t indexInFile, indexInBlock;
     char *buf = new char[blockSize];

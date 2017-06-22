@@ -22,7 +22,7 @@ public:
     bool insertIntoTable(const Tuple &t, const TableStruct &table);
     bool deleteFromTableWithIndex(TableStruct &table,
                                   const vector<Condition> &conditions,
-                                  const vector<int> &range,
+                                  vector<int> &range,
                                   vector<Data &> &moved,
                                   vector<int> &deleted);
     bool selectFromTableWithIndex(const TableStruct &table,
