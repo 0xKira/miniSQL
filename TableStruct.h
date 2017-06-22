@@ -8,7 +8,7 @@
 #include <vector>
 #include <string>
 
-extern size_t blockSize;
+extern const size_t blockSize;
 
 using namespace std;
 
