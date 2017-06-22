@@ -544,8 +544,8 @@ void Interpreter::EXEC_INSERT() {
     //cout<<"table has get"<<endl;
     onetuple.data.clear();
     onetuple = TupleList(table, values);
-    //ap.insertData(tablename,onetuple.data);
-
+    api.insertData(tablename,onetuple);
+    cout<<"insert successfully!"<<endl;
 }
 
 void Interpreter::EXEC_DELETE() {

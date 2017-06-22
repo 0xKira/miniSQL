@@ -17,17 +17,17 @@ Catalog::Catalog() {
     fileInd.open(catIndFile.c_str(), ios::in);
     if (!fileC) {
         fileC.open(catFile.c_str(), ios::out);
-        cout << catFile << " 创建成功" << endl;
+        cout << catFile << " creat successfully" << endl;
     } else {
-        cout << catFile << " 已经存在" << endl;
+        cout << catFile << " exit" << endl;
         getline(fileC, bufCat);
         mapTable();
     }
     if (!fileInd) {
         fileInd.open(catIndFile.c_str(), ios::out);
-        cout << catFile << " 创建成功" << endl;
+        cout << catFile << " create successfully" << endl;
     } else {
-        cout << catIndFile << " 已经存在" << endl;
+        cout << catIndFile << " exit" << endl;
         getline(fileInd, bufInd);
     }
 
