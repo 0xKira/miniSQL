@@ -19,8 +19,7 @@ class Catalog {
 		bool hasIndex(const string& indexname);
 		void addIndex(const string& tablename, const string& indexname, const string& attriname);
 		void deleteIndex(const string& indexname);
-                bool dropTableIndex(const string& tablename);
-	
+        bool dropTableIndex(const string& tablename);
 	public:
 		string bufCat;
 		string bufInd;

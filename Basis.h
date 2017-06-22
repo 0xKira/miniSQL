@@ -1,12 +1,9 @@
-//
-// Created by Kira on 2017/6/8.
-//
-
 #ifndef MINISQL_BASIS_H
 #define MINISQL_BASIS_H
 
 #include <string>
 #include <vector>
+#include <iostream>
 
 using namespace std;
 
@@ -20,6 +17,7 @@ public:
 public:
     virtual ~Data() {
     };
+    virtual void print() const=0;
 };
 
 class DataF:public Data {
@@ -29,13 +27,15 @@ public:
     DataF(float f) : x(f) {
         type = -1;
     }
-
-	bool operator<(const DataF& n) { return (x < n.x); };
-	bool operator==(const DataF& n) { return (x == n.x); };
-	bool operator<=(const DataF& n) { return (*this < n) || (*this == n); };
-	bool operator>(const DataF& n) { return !(*this <= n); };
-	bool operator!=(const DataF& n) { return !(*this == n); };
-	bool operator>=(const DataF& n) { return !(*this < n); };
+    void print() const {
+        cout << x<<" " << endl;
+    }
+    bool operator<(const DataF& n) { return (x < n.x); };
+    bool operator==(const DataF& n) { return (x == n.x); };
+    bool operator<=(const DataF& n) { return (*this < n) || (*this == n); };
+    bool operator>(const DataF& n) { return !(*this <= n); };
+    bool operator!=(const DataF& n) { return !(*this == n); };
+    bool operator>=(const DataF& n) { return !(*this < n); };
 };
 
 class DataI:public Data {
@@ -45,13 +45,15 @@ public:
     DataI(int i) : x(i) {
         type = 0;
     }
-
-	bool operator<(const DataI& n) { return (x < n.x); };
-	bool operator==(const DataI& n) { return (x == n.x); };
-	bool operator<=(const DataI& n) { return (*this < n) || (*this == n); };
-	bool operator>(const DataI& n) { return !(*this <= n); };
-	bool operator!=(const DataI& n) { return !(*this == n); };
-	bool operator>=(const DataI& n) { return !(*this < n); };
+    void print() const {
+        cout << x<<" " << endl;
+    }
+    bool operator<(const DataI& n) { return (x < n.x); };
+    bool operator==(const DataI& n) { return (x == n.x); };
+    bool operator<=(const DataI& n) { return (*this < n) || (*this == n); };
+    bool operator>(const DataI& n) { return !(*this <= n); };
+    bool operator!=(const DataI& n) { return !(*this == n); };
+    bool operator>=(const DataI& n) { return !(*this < n); };
 };
 
 class DataS:public Data {
@@ -64,13 +66,15 @@ public:
             type = 1;
         }
     }
-
-	bool operator<(const DataS& n) { return (x < n.x); };
-	bool operator==(const DataS& n) { return (x == n.x); };
-	bool operator<=(const DataS& n) { return (*this < n) || (*this == n); };
-	bool operator>(const DataS& n) { return !(*this <= n); };
-	bool operator!=(const DataS& n) { return !(*this == n); };
-	bool operator>=(const DataS& n) { return !(*this < n); };
+    void print() const {
+        cout << x<<" " << endl;
+    }
+    bool operator<(const DataS& n) { return (x < n.x); };
+    bool operator==(const DataS& n) { return (x == n.x); };
+    bool operator<=(const DataS& n) { return (*this < n) || (*this == n); };
+    bool operator>(const DataS& n) { return !(*this <= n); };
+    bool operator!=(const DataS& n) { return !(*this == n); };
+    bool operator>=(const DataS& n) { return !(*this < n); };
 };
 
 //typedef vector<Data *> Tuple;
@@ -98,7 +102,7 @@ public:
     }
 };
 
-class TableException: public std::exception{
+/*class TableException: public std::exception{
 public:
     TableException(string s) : text(s) {
     }
@@ -108,6 +112,7 @@ public:
     };
 private:
     string text;
-};
+};*/
 
 #endif //MINISQL_BASIS_H
+

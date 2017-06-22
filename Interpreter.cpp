@@ -1,10 +1,3 @@
-#include<iostream>
-#include<string>
-#include<stdexcept>
-#include<sstream>
-#include<fstream>
-#include<cstdlib>
-#include<vector>
 #include"Interpreter.h"
 
 using namespace std;
@@ -128,8 +121,6 @@ void Interpreter::EXEC_CREATE_TABLE() {
         //errror posotion
         cout << "error!" << endl;
 
-    Catalog ca;
-    API ap;
     string str = querys.substr(13, querys.length() - 13);
     istringstream is(str);
     string s, tablename;
@@ -164,7 +155,7 @@ void Interpreter::EXEC_CREATE_TABLE() {
                     hasIndex = true;
                     attrs[i].isIndex = true;
                     attrs[i].unique = true;
-                    ca.addIndex(tablename, tablename + attrs[i].attrName, attrs[i].attrName);
+                    cm.addIndex(tablename, tablename + attrs[i].attrName, attrs[i].attrName);
                     //ap.createIndex(tablename,tablename+attrs[i].attrName,attrs[i].attrName);
                     break;
                 }
@@ -238,8 +229,7 @@ void Interpreter::EXEC_CREATE_TABLE() {
         }
     }
     TableStruct *table = new TableStruct(tablename, attrs, hasIndex, tuplenum);
-    ca.addTable(*table);
-    //ap.createTable(*table);
+    api.createTable(*table);
     cout << "Interpreter create table successfully" << endl;
 
     return;
@@ -249,8 +239,7 @@ void Interpreter::EXEC_CREATE_INDEX() {
     if (querys[12] != ' ')
         //errror posotion
         cout << "error!" << endl;
-    Catalog ca;
-    API ap;
+
     string str = querys.substr(13, querys.length() - 13);
     istringstream is(str);
     string s, indexname, tablename, attrname;
@@ -280,8 +269,8 @@ void Interpreter::EXEC_CREATE_INDEX() {
     }
     //create index
     cout << indexname << tablename << attrname << endl;
-    ca.addIndex(tablename, indexname, attrname);
-    //ap.createIndex(tablename,indexname,attrname);
+    //ca.addIndex(tablename,indexname,attrname);
+    api.createIndex(tablename,indexname,attrname);
 
     cout << "Interpreter create index successfully" << endl;
 }
@@ -290,9 +279,9 @@ void Interpreter::EXEC_DROP() {
     if (querys[4] != ' ')
         //errror posotion
         cout << "error no space!" << endl;
-    Catalog ca;
     API ap;
     if (querys.substr(5, 5) == "table") {
+        //drop table
         if (querys[10] != ' ') {
             //errror posotion
             cout << "error no space2!" << endl;
@@ -307,8 +296,8 @@ void Interpreter::EXEC_DROP() {
             //errror posotion
             cout << "error!" << endl;
         }
-        ca.deleteTable(tablename);
-        //ap.dropTable(tablename);
+        //ca.deleteTable(tablename);
+        ap.dropTable(tablename);
         cout << "drop the table named " << tablename << endl;
         //DROP TABLE BY OTHERS
     } else if (querys.substr(5, 5) == "index") {
@@ -327,8 +316,8 @@ void Interpreter::EXEC_DROP() {
             //errror posotion
             cout << "error!" << endl;
         }
-        //ap.dropIndex(indexname);
-        ca.deleteIndex(indexname);
+        ap.dropIndex(indexname);
+        //ca.deleteIndex(indexname);
         cout << "drop the index named " << indexname << endl;
         //DROP index BY OTHERS
     } else
@@ -418,13 +407,12 @@ void Interpreter::EXEC_SELECT() {
     if (querys[6] != ' ')
         //errror posotion
         cout << "error!" << endl;
-    Catalog ca;
-    API ap;
+
     TableStruct table;
     string str = querys.substr(7, querys.length() - 7);
     istringstream is(str);
     string s, tablename, where;
-    int start;
+    int start,i;
 
     is >> s;
     if (s != "*") {
@@ -437,7 +425,7 @@ void Interpreter::EXEC_SELECT() {
         cout << "error!" << endl;
     }
     is >> tablename;
-    if (!ca.hasTable(tablename)) {
+    if (!cm.hasTable(tablename)) {
         //errror posotion
         cout << "error!" << endl;
     }
@@ -457,10 +445,20 @@ void Interpreter::EXEC_SELECT() {
     }
     where = querys.substr(start + 6, querys.length() - 6 - start);
 
-    table = ca.getTable(tablename);
+    table = cm.getTable(tablename);
     vector<Condition> cond;
     cond.clear();
     cond = ConditionList(table, where);
+    vector<Tuple> tup;
+    tup=api.select(tablename,cond);
+    for(i=0;i<tup.size();i++)
+    {
+        for(int j=0;j<tup[i].data.size();j++)
+        {
+            tup[i].data[j]->print();
+        }
+        cout<<endl;
+    }
     /*TableStruct output=ap.select(tableName, cond);
     EXEC_PRINT(output);*/
 
@@ -516,9 +514,7 @@ void Interpreter::EXEC_INSERT() {
     string str = querys.substr(7, querys.length() - 7);
     istringstream is(str);
     string s, tablename, values;
-    Catalog ca;
     Tuple onetuple;
-    API ap;
     TableStruct table;
     int start;
 
@@ -528,7 +524,7 @@ void Interpreter::EXEC_INSERT() {
         cout << "error!" << endl;
     }
     is >> tablename;
-    if (!ca.hasTable(tablename)) {
+    if (!cm.hasTable(tablename)) {
         //errror posotion
         cout << "error!" << endl;
     }
@@ -543,7 +539,7 @@ void Interpreter::EXEC_INSERT() {
     }
     values = querys.substr(start + 7, querys.length() - 7 - start);
 
-    table = ca.getTable(tablename);
+    table = cm.getTable(tablename);
     onetuple.data.clear();
     onetuple = TupleList(table, values);
     //ap.insertData(tablename,onetuple.data);
@@ -554,8 +550,7 @@ void Interpreter::EXEC_DELETE() {
     if (querys[6] != ' ')
         //errror posotion
         cout << "error!" << endl;
-    Catalog ca;
-    API ap;
+
     TableStruct table;
     string str = querys.substr(7, querys.length() - 7);
     istringstream is(str);
@@ -568,7 +563,7 @@ void Interpreter::EXEC_DELETE() {
         cout << "error!" << endl;
     }
     is >> tablename;
-    if (!ca.hasTable(tablename)) {
+    if (!cm.hasTable(tablename)) {
         //errror posotion
         cout << "error!" << endl;
     }
@@ -588,7 +583,7 @@ void Interpreter::EXEC_DELETE() {
     }
     where = querys.substr(start + 6, querys.length() - 6 - start);
 
-    table = ca.getTable(tablename);
+    table = cm.getTable(tablename);
     vector<Condition> cond;
     cond.clear();
     cond = ConditionList(table, where);

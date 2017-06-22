@@ -12,28 +12,31 @@
 #include"Catalog.h"
 #include"API.h"
 
+extern Catalog cm;
+extern API api;
+
 class Interpreter {
 //private:
-	public:
-		std::string querys;//query string
-	public:
-		Interpreter();
-		~Interpreter();
-		void inputQuery();
-		void EXEC();
-		void EXEC_CREATE();
-		void EXEC_CREATE_TABLE();
-		void EXEC_CREATE_INDEX();
-		void EXEC_DROP();
-		void EXEC_SELECT();
-		void EXEC_INSERT();
-		void EXEC_DELETE();
-		void EXEC_PRINT(TableStruct &table);
-		void EXEC_EXIT();
-		void EXEC_FILE();
+public:
+	std::string querys;//query string
+public:
+	Interpreter();
+	~Interpreter();
+	void inputQuery();
+	void EXEC();
+	void EXEC_CREATE();
+	void EXEC_CREATE_TABLE();
+	void EXEC_CREATE_INDEX();
+	void EXEC_DROP();
+	void EXEC_SELECT();
+	void EXEC_INSERT();
+	void EXEC_DELETE();
+	void EXEC_PRINT(TableStruct &table);
+	void EXEC_EXIT();
+	void EXEC_FILE();
 
-		vector<Condition> ConditionList(TableStruct& table, string where);
-		Tuple TupleList(TableStruct& table, string where);
+	vector<Condition> ConditionList(TableStruct& table, string where);
+	Tuple TupleList(TableStruct& table, string where);
 };
 
 bool invertToInt(string s, int& x);
