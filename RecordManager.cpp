@@ -85,6 +85,7 @@ RecordManager::selectFromTableWithIndex(const TableStruct &table, const vector<C
     size_t indexInFile, indexInBlock;
     char *buf = new char[blockSize];
     sort(range.begin(), range.end());
+
     for (int i = 0; i < range.size();) {
         indexInFile = range[i] / table.blockMaxRecordCount;
         bm.readBlockData(table.tableName, indexInFile, buf);
