@@ -9,7 +9,7 @@ RecordManager::RecordManager() {
 
 }
 
-bool RecordManager::insertIntoTable(const TableStruct &table, const Tuple &t) {
+bool RecordManager::insertIntoTable(TableStruct &table, const Tuple &t) {
     // 一个block至多存几条记录
     size_t blockToInsert;
     char *buf = new char[blockSize];
@@ -24,6 +24,7 @@ bool RecordManager::insertIntoTable(const TableStruct &table, const Tuple &t) {
     ptr = table.tupleNum % table.blockMaxRecordCount * table.tupleSize + buf;
     splitTuple(t, ptr);
     bool ret = bm.writeBlockData(table.tableName, blockToInsert, buf);
+    table.tupleNum++;
     delete[] buf;
     if (table.hasIndex) {
         // 调用indexManager更新index
@@ -92,7 +93,7 @@ RecordManager::selectFromTableWithIndex(const TableStruct &table, const vector<C
             Tuple &t = resolveData(table, buf + indexInBlock * table.tupleSize, table.tupleSize);
             result.push_back(t);
             i++;
-        } while ((range[i] / table.blockMaxRecordCount) == indexInFile);
+        } while (i < range.size() && ((range[i] / table.blockMaxRecordCount) == indexInFile));
     }
     delete[] buf;
     vector<Tuple>::iterator itr = result.begin();

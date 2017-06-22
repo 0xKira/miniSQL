@@ -20,7 +20,7 @@ private:
 public:
     RecordManager();
 
-    bool insertIntoTable(const TableStruct &table, const Tuple &t);
+    bool insertIntoTable(TableStruct &table, const Tuple &t);
     bool deleteFromTableWithIndex(TableStruct &table,
                                   const vector<Condition> &conditions,
                                   vector<int> &range,

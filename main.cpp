@@ -14,18 +14,24 @@ Catalog cm;
 Interpreter itp;
 API api;
 
-//select*from adf where a='adfsf'and b='adf';
-//create table taname(name int,city char(8) unique);
-//create index stunameidx on student (sname);
-//drop table student;
-//drop index stunameidx;
-//insert into student values ('12345678','wy',22,'M');
-//delete from student where sno ='88888888';
-//execfile afddsfile;
+int main() {
+    vector<Attribute> attrs;
+    attrs.push_back(Attribute("id", 0, true, true));
+    attrs.push_back(Attribute("fuck", -1, false, false));
+    attrs.push_back(Attribute("name", 5, false, false));
+    TableStruct ts("a", attrs, true, 1);
 
-int main(void) {
-    while (true)
-    {
-        itp.EXEC();
+//    Tuple t;
+//    t.data.push_back(new DataI(99));
+//    t.data.push_back(new DataF(2.222));
+//    t.data.push_back(new DataS("Kira!"));
+//    rm.insertIntoTable(ts, t);
+    vector<Condition> d;
+    vector<int> range;
+    range.push_back(0);
+    range.push_back(1);
+    vector<Tuple> result;
+    rm.selectFromTableWithIndex(ts, d, range, result);
+    for (auto res:result) {
     }
 }
