@@ -19,7 +19,7 @@ int main() {
     attrs.push_back(Attribute("id", 0, true, true));
     attrs.push_back(Attribute("fuck", -1, false, false));
     attrs.push_back(Attribute("name", 5, false, false));
-    TableStruct ts("a", attrs, true, 1);
+    TableStruct ts("a", attrs, true, 2);
 
 //    Tuple t;
 //    t.data.push_back(new DataI(99));
@@ -33,5 +33,6 @@ int main() {
     vector<Tuple> result;
     rm.selectFromTableWithIndex(ts, d, range, result);
     for (auto res:result) {
+        cout << (dynamic_cast<DataS *>(res.data[2])->x);
     }
 }
