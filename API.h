@@ -20,7 +20,7 @@ public:
 	void createIndex(std::string, std::string, std::string);
 	void dropIndex(std::string);
 	vector<Tuple> select(std::string tableName, vector<Condition>& condTable);
-	void insertData(std::string tableName, Tuple& data);
+	void insertData(TableStruct &table, Tuple& data);
 	//void deleteData(std::string tableName);
 	void deleteData(std::string tableName, vector<Condition>& condTable);
 };

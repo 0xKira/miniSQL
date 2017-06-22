@@ -279,7 +279,6 @@ void Interpreter::EXEC_DROP() {
     if (querys[4] != ' ')
         //errror posotion
         cout << "error no space!" << endl;
-    API ap;
     if (querys.substr(5, 5) == "table") {
         //drop table
         if (querys[10] != ' ') {
@@ -297,7 +296,7 @@ void Interpreter::EXEC_DROP() {
             cout << "error!" << endl;
         }
         //ca.deleteTable(tablename);
-        ap.dropTable(tablename);
+        api.dropTable(tablename);
         cout << "drop the table named " << tablename << endl;
         //DROP TABLE BY OTHERS
     } else if (querys.substr(5, 5) == "index") {
@@ -316,7 +315,7 @@ void Interpreter::EXEC_DROP() {
             //errror posotion
             cout << "error!" << endl;
         }
-        ap.dropIndex(indexname);
+        api.dropIndex(indexname);
         //ca.deleteIndex(indexname);
         cout << "drop the index named " << indexname << endl;
         //DROP index BY OTHERS
@@ -465,15 +464,16 @@ void Interpreter::EXEC_SELECT() {
     return;
 }
 
-Tuple Interpreter::TupleList(TableStruct &table, string where) {
-    Tuple tup;
-    tup.data.clear();
+Tuple &Interpreter::TupleList(TableStruct &table, string where) {
+    Tuple *tup = new Tuple();
+    tup->data.clear();
     istringstream is(where);
     string s;
     int i_type;
     float f_type;
     int i;
 
+    tup->data.clear();
     is >> s;
     if (s != "(") {
         //errror posotion
@@ -487,11 +487,16 @@ Tuple Interpreter::TupleList(TableStruct &table, string where) {
         }
         if ((table.attrs[i].type < 0) && (invertToFloat(s, f_type))) {
             Data *da = new DataF(f_type);
-            tup.data.push_back(da);
+            da->type=-1;
+            tup->data.push_back(da);
         } else if ((table.attrs[i].type == 0) && (invertToInt(s, i_type))) {
             Data *da = new DataI(i_type);
+            da->type=0;
+            tup->data.push_back(da);
         } else if (table.attrs[i].type > 0) {
             Data *da = new DataS(s);
+            da->type=s.size();
+            tup->data.push_back(da);
         } else {
             //errror posotion
             cout << "error! " << endl;
@@ -499,7 +504,7 @@ Tuple Interpreter::TupleList(TableStruct &table, string where) {
         is>>s;
     }
     if (s == ")")
-        return tup;
+        return *tup;
     else {
         //errror posotion
         cout << "error! wrong SQL of values )" << endl;
@@ -515,7 +520,8 @@ void Interpreter::EXEC_INSERT() {
     istringstream is(str);
     string s, tablename, values;
     Tuple onetuple;
-    TableStruct table;
+    TableStruct *table = new TableStruct();
+
     int start;
 
     is >> s;
@@ -540,11 +546,13 @@ void Interpreter::EXEC_INSERT() {
     values = querys.substr(start + 7, querys.length() - 7 - start);
 
     //cout<<"gettable"<<endl;
-    table = cm.getTable(tablename);
+    *table = cm.getTable(tablename);
     //cout<<"table has get"<<endl;
     onetuple.data.clear();
-    onetuple = TupleList(table, values);
-    api.insertData(tablename,onetuple);
+    onetuple = TupleList(*table, values);
+    api.insertData(*table,onetuple);
+    cm.writeback(*table);
+
     cout<<"insert successfully!"<<endl;
 }
 

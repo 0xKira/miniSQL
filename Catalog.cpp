@@ -169,6 +169,7 @@ void Catalog::addTable(TableStruct &table) {
 
 void Catalog::deleteTable(const string &tablename) {
     if (!hasTable(tablename)) {
+        cout<<hasTable(tablename)<<endl;
         //error condtion
         cout << "this table do not exit!" << endl;
         return;

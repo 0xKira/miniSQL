@@ -36,7 +36,7 @@ public:
 	void EXEC_FILE();
 
 	vector<Condition> ConditionList(TableStruct& table, string where);
-	Tuple TupleList(TableStruct& table, string where);
+	Tuple &TupleList(TableStruct& table, string where);
 };
 
 bool invertToInt(string s, int& x);
