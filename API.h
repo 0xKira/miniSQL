@@ -4,6 +4,7 @@
 #include "Catalog.h"
 #include "BufferManager.h"
 #include "IndexManager.h"
+#include "RecordManager.h"
 
 class API
 {

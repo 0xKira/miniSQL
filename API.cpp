@@ -3,14 +3,18 @@
 using namespace std;
 void API::createTable(TableStruct & table)
 {
-	Catalog catalogManager;
-	catalogManager.addTable(table);
+	extern Catalog cm;
+	extern BufferManager bm;
+	cm.addTable(table);
+	bm.createTable(table.tableName);
 }
 
 void API::dropTable(string tableName)
 {
-	Catalog catalogManager;
-	catalogManager.deleteTable(tableName);
+	extern Catalog cm;
+	extern BufferManager bm;
+	cm.deleteTable(tableName);
+	bm.dropTable(tableName);
 }
 
 void API::createIndex(string tableName, string indexName, string attrName)
@@ -27,9 +31,8 @@ void API::dropIndex(string indexName)
 
 void API::select(string tableName, string attrName, vector<Condition>& condTable)
 {
-	// TODO:
-	// wait for recordManager
-	// print operation will be done in this section
+	extern RecordManager rm;
+	
 }
 
 void API::insertData(string tableName, vector<Data>& data)
