@@ -181,6 +181,7 @@ void Catalog::deleteTable(const string &tablename) {
     string s;
     int position = pos;
 
+    dropTableIndex(tablename);
     is >> s;
     position = position + s.size() + 1;
     is >> s;
@@ -191,7 +192,6 @@ void Catalog::deleteTable(const string &tablename) {
     bufCat[position] = '0';
     //cout<<"after:the valid of this table is "<<bufCat[position]<<endl;
     cat.erase(tablename);
-    dropTableIndex(tablename);
     cout << "delete this table successfully" << endl;
 }
 
@@ -270,6 +270,7 @@ bool Catalog::dropTableIndex(const string &tablename) {
 
     for (int i = 0; i < table.attrs.size(); i++) {
         if (table.attrs[i].isIndex) {
+            cout<<"has index!"<<endl;
             attriname = table.attrs[i].attrName;
             name = tablename + '_' + attriname;
             indexname = table_index[name];
