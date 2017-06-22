@@ -69,7 +69,7 @@ bool BufferUnit::readBlock(int blockIndexInFile, char *outBuffer) {
             cerr << "no more available block" << endl;
             return false;
         }
-		char *buffer = new char(blockSize);
+        char *buffer = new char[blockSize];
         // 从文件中读取内容
         fstream file(fileName, ios::in | ios::out | ios::binary);
         file.seekg(blockIndexInFile * blockSize, ios::beg);
