@@ -6,6 +6,10 @@
 #include "IndexManager.h"
 #include "RecordManager.h"
 
+extern Catalog cm;
+extern BufferManager bm;
+extern RecordManager rm;
+
 class API
 {
 public:

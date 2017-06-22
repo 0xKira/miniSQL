@@ -14,7 +14,7 @@ void IndexManager::createIndex(const Attribute & attr, std::string indexName, Ta
 	RecordManager rm;
 	rm.selectFromTable(table, nullCon, tuples);
 	int i;
-	for (i = 0; i < table.attrs.size; i++)
+	for (i = 0; i < table.attrs.size(); i++)
 		if (table.attrs[i].attrName == attr.attrName)
 		{
 			table.attrs[i].isIndex = 1;
