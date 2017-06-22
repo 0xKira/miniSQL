@@ -74,7 +74,7 @@ void Interpreter::inputQuery() {
         start++;
     }
     querys = temp.substr(start, temp.length() - start);
-    cout << querys << endl;
+    //cout << querys << endl;
     return;
 }
 

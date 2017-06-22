@@ -31,7 +31,7 @@ class Catalog {
 		string catIndFile;
 	private:
 		bool invertToInt(string s, int& x);
-		//void Print_T(TableStruct &table);
+		void Print_T(TableStruct &table);
 };
 
 #endif /* Catalog_h */
