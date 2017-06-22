@@ -17,12 +17,17 @@ int main() {
     vector<Attribute> attrs;
     attrs.push_back(Attribute("id", 0, true, true));
     attrs.push_back(Attribute("fuck", -1, false, false));
-    attrs.push_back(Attribute("name", 4, false, false));
+    attrs.push_back(Attribute("name", 5, false, false));
     TableStruct ts("a", attrs, true, 0);
-
-    Tuple t;
-    t.data.push_back(new DataI(100));
-    t.data.push_back(new DataF(1.234));
-    t.data.push_back(new DataS("Kira!"));
-    rm.insertIntoTable(ts, t);
+//
+//    Tuple t;
+//    t.data.push_back(new DataI(100));
+//    t.data.push_back(new DataF(1.234));
+//    t.data.push_back(new DataS("Kira!"));
+//    rm.insertIntoTable(ts, t);
+    vector<Condition> d;
+    vector<int> range;
+    range.push_back(0);
+    vector<Tuple> result;
+    rm.selectFromTableWithIndex(ts, d, range, result);
 }
