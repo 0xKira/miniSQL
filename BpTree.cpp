@@ -271,6 +271,9 @@ void BpTree::insert(Data * data, int pos)
 				if (type > 0) memcpy(newNode + HEADLEN, &(((DataS*)data)->x), type * sizeof(char));
 				*(int*)(newNode + HEADLEN + moduleSize) = -1;
 				*(int*)(currentNode + keyPos) = size - 1;
+				saveToBuf(newNode);
+				delete[] newNode;
+				return;
 			}
 			memcpy(currentNode, buf + position * NODESIZE, NODESIZE);
 			ifLeaf = (bool)currentNode[0];
@@ -310,6 +313,8 @@ void BpTree::insert(Data * data, int pos)
 				*(int*)(currentNode + HEADLEN + i*moduleSize) = pos;
 				memcpy(currentNode + HEADLEN + i*moduleSize + 4, &((DataS*)data)->x, type * sizeof(char));
 			}
+			saveToBuf(currentNode);
+			delete[] currentNode;
 		}
 		else
 		{
@@ -367,6 +372,8 @@ void BpTree::insert(Data * data, int pos)
 				memcpy(tempString, (tempNode + (capacity / 2)*moduleSize + 4), type);
 				insertInParent(currentNode, tempString, newNode, type);
 			}
+			saveToBuf(newNode);
+			delete[] newNode; delete[] tempNode;
 		}
 	}
 }
