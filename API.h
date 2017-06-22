@@ -15,8 +15,8 @@ public:
 	void dropTable(std::string);
 	void createIndex(std::string, std::string, std::string);
 	void dropIndex(std::string);
-	void select(std::string tableName, std::string attrName, vector<Condition>& condTable);
-	void insertData(std::string tableName, vector<Data>& data);
-	void deleteData(std::string tableName);
+	vector<Tuple> select(std::string tableName, vector<Condition>& condTable);
+	void insertData(std::string tableName, Tuple& data);
+	//void deleteData(std::string tableName);
 	void deleteData(std::string tableName, vector<Condition>& condTable);
 };

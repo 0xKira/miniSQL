@@ -29,20 +29,26 @@ void API::dropIndex(string indexName)
 	catalogManager.deleteIndex(indexName);
 }
 
-void API::select(string tableName, string attrName, vector<Condition>& condTable)
+vector<Tuple> API::select(string tableName, vector<Condition>& condTable)
 {
 	extern RecordManager rm;
-	
+	extern Catalog cm;
+	vector<Tuple> result;
+	bool flag = rm.selectFromTable(cm.getTable(tableName), condTable, result);
+	if (!flag) printf("Can't find");
+	return result;
 }
 
-void API::insertData(string tableName, vector<Data>& data)
+void API::insertData(string tableName, Tuple& tuple)
 {
-}
-
-void API::deleteData(string tableName)
-{
+	extern RecordManager rm;
+	extern Catalog cm;
+	rm.insertIntoTable(tuple, cm.getTable(tableName));
 }
 
 void API::deleteData(string tableName, vector<Condition>& condTable)
 {
+	extern RecordManager rm;
+	extern Catalog cm;
+	rm.deleteFromTable(cm.getTable(tableName), condTable);
 }
