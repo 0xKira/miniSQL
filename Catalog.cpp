@@ -179,6 +179,7 @@ void Catalog::deleteTable(const string& tablename) {
 	string s;
 	int position=pos;
 
+	dropTableIndex(tablename);
 	is>>s;
 	position=position+s.size()+1;
 	is>>s;
@@ -260,6 +261,24 @@ TableStruct &Catalog::getTable(const string& tablename) {
 	return *table;
 }
 
+bool Catalog::dropTableIndex(const string& tablename) {
+	int i;
+	TableStruct &table=getTable(tablename);
+	string indexname,attriname,name;
+
+	for(i=0; i<table.attrs.size(); i++) {
+		if(table.attrs[i].isIndex) {
+			attriname=table.attrs[i].attrName;
+			name=tablename+'_'+attriname;
+			//cout<<"name is: "<<name<<endl;
+			indexname=table_index[name];
+			//cout<<"indexname: "<<indexname<<endl;
+			deleteIndex(indexname);
+			table_index.erase(name);
+		}
+	}
+}
+
 void Catalog::writeback(TableStruct &table) {
 	int pos=cat[table.tableName];
 	string str=bufCat.substr(pos,bufCat.length()-pos);
@@ -314,7 +333,7 @@ void Catalog::writeback(TableStruct &table) {
 void Catalog::mapIndex() {
 	string str;
 	istringstream is;
-	string s,indexname;
+	string s,indexname,tablename,attriname,name;
 	int pos=0,length,position;
 
 	while(pos<bufInd.length()) {
@@ -338,6 +357,10 @@ void Catalog::mapIndex() {
 			cout<<"map this index named "<<indexname<<endl;
 			cat_index.insert(pair<string,int>(indexname,position));
 		}
+		is>>tablename;
+		is>>attriname;
+		name=tablename+'_'+attriname;
+		table_index.insert(pair<string,string>(name,indexname));
 	}
 }
 
@@ -374,6 +397,7 @@ bool Catalog::hasIndex(const string& indexname) {
 
 void Catalog::addIndex(const string& tablename, const string& indexname, const string& attriname) {
 	ostringstream os,os2;
+	string name;
 	int pos1,epos;
 	int i;
 
@@ -382,6 +406,10 @@ void Catalog::addIndex(const string& tablename, const string& indexname, const s
 		cout<<"this index has already exit"<<endl;
 		return ;
 	}
+	name=tablename+'_'+attriname;
+	cout<<name<<endl;
+	cout<<indexname<<endl;
+	table_index.insert(pair<string,string>(name,indexname));
 	TableStruct &table=getTable(tablename);
 	for(i=0; i<table.attrs.size(); i++) {
 		if(attriname==table.attrs[i].attrName) {
@@ -429,7 +457,7 @@ void Catalog::deleteIndex(const string& indexname) {
 	int pos=cat_index[indexname];
 	string str=bufInd.substr(pos,bufInd.length()-pos);
 	istringstream is(str);
-	string s,tablename,attrname;;
+	string s,tablename,attrname;
 	int position=pos;
 	int i;
 
@@ -439,13 +467,14 @@ void Catalog::deleteIndex(const string& indexname) {
 	position=position+s.size()+1;
 	is>>s;
 	position=position+s.size()+1;
-	cout<<"before:the valid of this table is "<<bufInd[position]<<endl;
+	//cout<<"before:the valid of this table is "<<bufInd[position]<<endl;
 	bufInd[position]='0';
-	cout<<"after:the valid of this table is "<<bufInd[position]<<endl;
+	//cout<<"after:the valid of this table is "<<bufInd[position]<<endl;
 	cat_index.erase(indexname);
 	is>>s;
-	is>>s;
 	is>>tablename;
+	//cout<<"tablenaem: "<<tablename<<endl;
+	//cout<<cat[tablename]<<endl;
 	TableStruct &table=getTable(tablename);
 	is>>attrname;
 	for(i=0; i<table.attrs.size(); i++) {
@@ -457,5 +486,5 @@ void Catalog::deleteIndex(const string& indexname) {
 	if(i>=table.attrs.size())
 		table.hasIndex=false;
 	writeback(table);
-	cout<<"delete this table successfully"<<endl;
+	cout<<"delete this index successfully"<<endl;
 }
