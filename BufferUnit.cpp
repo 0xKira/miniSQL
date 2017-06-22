@@ -7,9 +7,8 @@
 #include <fstream>
 #include "BufferUnit.h"
 
-BufferUnit::BufferUnit(const string &tableName, size_t blockSize, size_t blockNum, size_t fileSize) : blockSize(blockSize),
-                                                                                               blockNum(blockNum),
-                                                                                               fileSize(fileSize) {
+BufferUnit::BufferUnit(const string &tableName, size_t blockSize, size_t blockNum, size_t fileSize) : blockSize(
+        blockSize), blockNum(blockNum), fileSize(fileSize) {
 
     fileName = "./data/" + tableName + ".data";
     blockIndexInBuffer.clear();
