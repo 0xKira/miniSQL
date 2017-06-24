@@ -457,7 +457,6 @@ void Interpreter::EXEC_SELECT() {
         throw runtime_error( "Interpreter: invalid query format in SELECT!" );
         //cout << "error!" << endl;
     }
-    table = cm.getTable(tablename);
     is >> s;
     if (s == ";") {
         vector<Tuple> result;
@@ -488,15 +487,15 @@ void Interpreter::EXEC_SELECT() {
     cond = ConditionList(table, where);
     vector<Tuple> tup;
     tup=api.select(table,cond);
-    cout<<tup.size()<<endl;
     for(i=0;i<tup.size();i++)
     {
         for(int j=0;j<tup[i].data.size();j++)
         {
             tup[i].data[j]->print();
         }
-        cout<<endl;
+        cout<<' ';
     }
+    cout<<endl;
     //EXEC_PRINT(output);
 
     return;
