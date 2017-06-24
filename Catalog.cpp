@@ -17,18 +17,19 @@ Catalog::Catalog() {
     fileInd.open(catIndFile.c_str(), ios::in);
     if (!fileC) {
         fileC.open(catFile.c_str(), ios::out);
-        cout << catFile << " creat successfully" << endl;
+        //cout << catFile << " creat successfully" << endl;
     } else {
-        cout << catFile << " exit" << endl;
+        //cout << catFile << " exit" << endl;
         getline(fileC, bufCat);
         mapTable();
     }
     if (!fileInd) {
         fileInd.open(catIndFile.c_str(), ios::out);
-        cout << catFile << " create successfully" << endl;
+        //cout << catFile << " create successfully" << endl;
     } else {
-        cout << catIndFile << " exit" << endl;
+        //cout << catIndFile << " exit" << endl;
         getline(fileInd, bufInd);
+        mapIndex();
     }
 
     fileC.close();
@@ -41,15 +42,17 @@ Catalog::~Catalog() {
     fileC.open(catFile.c_str(), ios::out);
     fileInd.open(catIndFile.c_str(), ios::out);
     if (!fileC) {
+        throw runtime_error( "Catalog:error in write the data back to file TABLE!" );
         cout << catFile << "can not open" << endl;
     } else {
-        cout << catFile << "open" << endl;
+        //cout << catFile << "open" << endl;
         fileC << bufCat << endl;
     }
     if (!fileInd) {
-        cout << catIndFile << "can not open" << endl;
+        throw runtime_error( "Catalog:error in write the data back to file INDEX!" );
+        //cout << catIndFile << "can not open" << endl;
     } else {
-        cout << catIndFile << "open" << endl;
+        //cout << catIndFile << "open" << endl;
         fileInd << bufInd << endl;
     }
     bufCat.clear();
@@ -94,7 +97,7 @@ void Catalog::mapTable() {
         is >> tablename;
         is >> s;
         if (s == "1") {
-            cout << "map this table named " << tablename << endl;
+            //cout << "map this table named " << tablename << endl;
             cat.insert(pair<string, int>(tablename, position));
         }
     }
@@ -132,6 +135,7 @@ void Catalog::addTable(TableStruct &table) {
 
     if (hasTable(table.tableName)) {
         //error condtion
+        throw runtime_error( "Catalog:This tabel has already existed!" );
         cout << "this table has already exit!" << endl;
         return;
     }
@@ -169,9 +173,10 @@ void Catalog::addTable(TableStruct &table) {
 
 void Catalog::deleteTable(const string &tablename) {
     if (!hasTable(tablename)) {
-        cout<<hasTable(tablename)<<endl;
+        //cout<<hasTable(tablename)<<endl;
         //error condtion
-        cout << "this table do not exit in the first part od deletetable!" << endl;
+        throw runtime_error( "Catalog:This table do not exist while deletetable!" );
+        //cout << "this table do not exit in the first part od deletetable!" << endl;
         return;
     }
 
@@ -210,7 +215,8 @@ void Catalog::Print_T(TableStruct& table) {
 TableStruct &Catalog::getTable(const string &tablename) {
     if (!hasTable(tablename)) {
         //error condition
-        cout << "error! don't exit this table " << tablename << endl;
+        throw runtime_error( "Catalog:This table do not exist while get table!" );
+        //cout << "error! don't exit this table " << tablename << endl;
     }
     bool hasIndex;
     size_t tupleNum;
@@ -254,6 +260,7 @@ TableStruct &Catalog::getTable(const string &tablename) {
     is >> s;
     if (s != ";") {
         //error condition
+        throw runtime_error( "Catalog:invalid query format in ECECFILE in getTable!" );
         cout << "error! don't exit this table" << endl;
     }
     TableStruct *table = new TableStruct(tablename, attrs, hasIndex, tupleNum);
@@ -325,7 +332,8 @@ void Catalog::writeback(TableStruct &table) {
     //cout<<"the now pos1 is: "<<pos1<<endl;
     //cout<<"the now epos is: "<<epos<<endl;
     if (epos_b != epos) {
-        cout << "the wrong length of the new table" << endl;
+        throw runtime_error( "Catalog:the wrong length of new table while write back!" );
+        //cout << "the wrong length of the new table" << endl;
     } else {
         bufCat.replace(pos_b, os2.str().size(), os2.str());
     }
@@ -343,19 +351,21 @@ void Catalog::mapIndex() {
         is >> s;
         if (!invertToInt(s, position)) {
             //errror condition
-            return;
+            throw runtime_error( "Catalog:Can invert while mapIndex!" );
+            //return;
         }
         pos = position + s.size();
         is >> s;
         if (!invertToInt(s, length)) {
             //errror condition
-            return;
+            throw runtime_error( "Catalog:Can invert while mapIndex!" );
+            //return;
         }
         pos = pos + length + s.size() + 2;
         is >> indexname;
         is >> s;
         if (s == "1") {
-            cout << "map this index named " << indexname << endl;
+            //cout << "map this index named " << indexname << endl;
             cat_index.insert(pair<string, int>(indexname, position));
         }
         is >> tablename;
@@ -407,7 +417,8 @@ void Catalog::addIndex(const string &tablename, const string &indexname, const s
 
     if (hasIndex(indexname)) {
         //error condition
-        cout << "this index has already exit" << endl;
+        throw runtime_error( "Catalog:This index has already exist while add index!" );
+        //cout << "this index has already exit" << endl;
         return;
     }
     TableStruct &table = getTable(tablename);
@@ -415,23 +426,26 @@ void Catalog::addIndex(const string &tablename, const string &indexname, const s
         if (attriname == table.attrs[i].attrName) {
             if (table.attrs[i].unique) {
                 if (table.attrs[i].isIndex) {
-                    cout << "there is a index in this attributr" << endl;
-                    return;
+                    throw runtime_error( "Catalog:This index has already exist in this attribute while add index!" );
+                    //cout << "there is a index in this attributr" << endl;
+                    //return;
                 } else {
                     //add the index
                     table.attrs[i].isIndex = true;
                     break;
                 }
             } else {
-                cout << "this attributr is not unique" << endl;
-                return;
+                throw runtime_error( "Catalog:Thisattributr is not unique while add index!" );
+                //cout << "this attributr is not unique" << endl;
+                //return;
             }
         }
     }
     if (i >= table.attrs.size()) {
         //errror posotion
-        cout << "error in add index!" << endl;
-        return;
+        throw runtime_error( "Catalog:This can not add index while add index!" );
+        //cout << "error in add index!" << endl;
+        //return;
     }
     pos1 = bufInd.size();
     name=tablename+'_'+attriname;
@@ -452,8 +466,9 @@ void Catalog::addIndex(const string &tablename, const string &indexname, const s
 void Catalog::deleteIndex(const string &indexname) {
     if (!hasIndex(indexname)) {
         //error condtion
-        cout << "this index do not exit in delete index!" << endl;
-        return;
+        throw runtime_error( "Catalog:This index do not exit in delete index!" );
+        //cout << "this index do not exit in delete index!" << endl;
+        //return;
     }
 
     int pos = cat_index[indexname];

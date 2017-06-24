@@ -96,8 +96,8 @@ void Interpreter::EXEC() {
     } else if (querys.substr(0, 8) == "execfile") {
         EXEC_FILE();
     } else {
-        cout << "error!" << endl;
-        //throw QueryException("ERROR: invalid query format!");
+        throw runtime_error( "Interpreter: invalid query format in EXEC!" );
+        //cout << "error!" << endl;
     }
 }
 
@@ -113,13 +113,15 @@ void Interpreter::EXEC_CREATE() {
         EXEC_CREATE_INDEX();
     else
         //error position
-        cout << "error!" << endl;
+        throw runtime_error( "Interpreter: invalid query format in CREATE!" );
+        //cout << "error!" << endl;
 }
 
 void Interpreter::EXEC_CREATE_TABLE() {
     if (querys[12] != ' ')
         //errror posotion
-        cout << "error!" << endl;
+        //cout << "error!" << endl;
+        throw runtime_error( "Interpreter: invalid query format in CREATE_TABLE!" );
 
     string str = querys.substr(13, querys.length() - 13);
     istringstream is(str);
@@ -135,20 +137,23 @@ void Interpreter::EXEC_CREATE_TABLE() {
     //cout<<table.tableName<<endl;
     is >> s;
     if (s != "(")
+        throw runtime_error( "Interpreter: invalid query format in CREATE_TABLE!" );
         //errror posotion
-        cout << "error!" << endl;
+        //cout << "error!" << endl;
     //Attribute attr;
     while (is >> s) {
         if (s == "primary") {
             is >> s;
             if (s != "key")
+                throw runtime_error( "Interpreter: invalid query format in CREATE_TABLE!" );
                 //errror posotion
-                cout << "error!" << endl;
+                //cout << "error!" << endl;
             hasIndex = true;
             is >> s;
             if (s != "(")
+                throw runtime_error( "Interpreter: invalid query format in CREATE_TABLE!" );
                 //errror posotion
-                cout << "error!" << endl;
+                //cout << "error!" << endl;
             is >> s;
             for (i = 0; i < attrs.size(); i++) {
                 if (s == attrs[i].attrName) {
@@ -161,16 +166,19 @@ void Interpreter::EXEC_CREATE_TABLE() {
                 }
             }
             if (i > attrs.size())
+                throw runtime_error( "Interpreter: invalid query format in CREATE_TABLE!" );
                 //errror posotion
-                cout << "error!" << endl;
+                //cout << "error!" << endl;
             is >> s;
             if (s != ")")
+                throw runtime_error( "Interpreter: invalid query format in CREATE_TABLE!" );
                 //errror posotion
-                cout << "error!" << endl;
+                //cout << "error!" << endl;
             is >> s;
             if (s != ")")
+                throw runtime_error( "Interpreter: invalid query format in CREATE_TABLE!" );
                 //errror posotion
-                cout << "error!" << endl;
+                //cout << "error!" << endl;
             else
                 break;
         } else {
@@ -186,15 +194,17 @@ void Interpreter::EXEC_CREATE_TABLE() {
                 if (s != "(") {
                     delete temp;
                     //errror posotion
-                    cout << "error 1!" << endl;
+                    throw runtime_error( "Interpreter: invalid query format in CREATE_TABLE!" );
+                    //cout << "error 1!" << endl;
                 }
 
                 is >> s;
                 int num;
                 if (!invertToInt(s, num)) {
                     delete temp;
+                    throw runtime_error( "Interpreter: invalid query format in CREATE_TABLE!" );
                     //errror posotion
-                    cout << "error 2!" << endl;
+                    //cout << "error 2!" << endl;
                 } else {
                     temp->type = num;
                 }
@@ -202,8 +212,9 @@ void Interpreter::EXEC_CREATE_TABLE() {
                 is >> s;
                 if (s != ")") {
                     delete temp;
+                    throw runtime_error( "Interpreter: invalid query format in CREATE_TABLE!" );
                     //errror posotion
-                    cout << "error 3!" << endl;
+                    //cout << "error 3!" << endl;
                 }
             }
             is >> s;
@@ -223,8 +234,9 @@ void Interpreter::EXEC_CREATE_TABLE() {
                 break;
             } else {
                 delete temp;
+                throw runtime_error( "Interpreter: invalid query format in CREATE_TABLE!" );
                 //errror posotion
-                cout << "error 4!" << endl;
+                //cout << "error 4!" << endl;
             }
         }
     }
@@ -237,8 +249,9 @@ void Interpreter::EXEC_CREATE_TABLE() {
 
 void Interpreter::EXEC_CREATE_INDEX() {
     if (querys[12] != ' ')
+        throw runtime_error( "Interpreter: invalid query format in CREATE_INDEX!" );
         //errror posotion
-        cout << "error!" << endl;
+        //cout << "error!" << endl;
 
     string str = querys.substr(13, querys.length() - 13);
     istringstream is(str);
@@ -247,25 +260,29 @@ void Interpreter::EXEC_CREATE_INDEX() {
     is >> indexname;
     is >> s;
     if (s != "on") {
+        throw runtime_error( "Interpreter: invalid query format in CREATE_INDEX!" );
         //errror posotion
-        cout << "error!" << endl;
+        //cout << "error!" << endl;
     }
     is >> tablename;
     is >> s;
     if (s != "(") {
+        throw runtime_error( "Interpreter: invalid query format in CREATE_INDEX!" );
         //errror posotion
-        cout << "error!" << endl;
+        //cout << "error!" << endl;
     }
     is >> attrname;
     is >> s;
     if (s != ")") {
+        throw runtime_error( "Interpreter: invalid query format in CREATE_INDEX!" );
         //errror posotion
-        cout << "error!" << endl;
+        //cout << "error!" << endl;
     }
     is >> s;
     if (s != ";") {
+        throw runtime_error( "Interpreter: invalid query format in CREATE_INDEX!" );
         //errror posotion
-        cout << "error!" << endl;
+        //cout << "error!" << endl;
     }
     //create index
     cout << indexname << tablename << attrname << endl;
@@ -277,13 +294,15 @@ void Interpreter::EXEC_CREATE_INDEX() {
 
 void Interpreter::EXEC_DROP() {
     if (querys[4] != ' ')
+        throw runtime_error( "Interpreter: invalid query format in DROP!" );
         //errror posotion
-        cout << "error no space!" << endl;
+        //cout << "error no space!" << endl;
     if (querys.substr(5, 5) == "table") {
         //drop table
         if (querys[10] != ' ') {
+            throw runtime_error( "Interpreter: invalid query format in DROP_TABLE!" );
             //errror posotion
-            cout << "error no space2!" << endl;
+            //cout << "error no space2!" << endl;
         }
         string str = querys.substr(11, querys.length() - 11);
         istringstream is(str);
@@ -292,17 +311,19 @@ void Interpreter::EXEC_DROP() {
         string s;
         is >> s;
         if (s != ";") {
+            throw runtime_error( "Interpreter: invalid query format in DROP_TABLE!" );
             //errror posotion
-            cout << "error!" << endl;
+            //cout << "error!" << endl;
         }
         //ca.deleteTable(tablename);
         api.dropTable(tablename);
-        cout << "drop the table named " << tablename << endl;
+        //cout << "drop the table named " << tablename << endl;
         //DROP TABLE BY OTHERS
     } else if (querys.substr(5, 5) == "index") {
         if (querys[10] != ' ') {
             //errror posotion
-            cout << "error!" << endl;
+            throw runtime_error( "Interpreter: invalid query format in DROP_INDEX!" );
+            //cout << "error!" << endl;
         }
         //drop index stunameidx;
         string str = querys.substr(11, querys.length() - 11);
@@ -313,15 +334,17 @@ void Interpreter::EXEC_DROP() {
         is >> s;
         if (s != ";") {
             //errror posotion
-            cout << "error!" << endl;
+            throw runtime_error( "Interpreter: invalid query format in DROP_INDEX!" );
+            //cout << "error!" << endl;
         }
         api.dropIndex(indexname);
         //ca.deleteIndex(indexname);
-        cout << "drop the index named " << indexname << endl;
+        //cout << "drop the index named " << indexname << endl;
         //DROP index BY OTHERS
     } else
         //error position
-        cout << "error!" << endl;
+        throw runtime_error( "Interpreter: invalid query format in DROP_INDEX!" );
+        //cout << "error!" << endl;
 }
 
 vector<Condition> Interpreter::ConditionList(TableStruct &table, string where) {
@@ -399,44 +422,65 @@ vector<Condition> Interpreter::ConditionList(TableStruct &table, string where) {
         }
     }
 
+    for(int i=0;i<cond.size();i++)
+    {
+        cout<<cond[i].flag<<endl;
+    }
+
     return cond;
 }
 
 void Interpreter::EXEC_SELECT() {
     if (querys[6] != ' ')
         //errror posotion
-        cout << "error!" << endl;
+        throw runtime_error( "Interpreter: invalid query format in SELECT!" );
+        //cout << "error!" << endl;
 
     TableStruct table;
     string str = querys.substr(7, querys.length() - 7);
     istringstream is(str);
     string s, tablename, where;
     int start,i;
+    vector<Condition> cond;
+    cond.clear();
 
     is >> s;
     if (s != "*") {
         //errror posotion
-        cout << "error!" << endl;
+        throw runtime_error( "Interpreter: invalid query format in SELECT!" );
+        //cout << "error!" << endl;
     }
     is >> s;
     if (s != "from") {
         //errror posotion
-        cout << "error!" << endl;
+        throw runtime_error( "Interpreter: invalid query format in SELECT!" );
+        //cout << "error!" << endl;
     }
     is >> tablename;
     if (!cm.hasTable(tablename)) {
         //errror posotion
-        cout << "error!" << endl;
+        throw runtime_error( "Interpreter: invalid query format in SELECT!" );
+        //cout << "error!" << endl;
     }
     is >> s;
     if (s == ";") {
+        vector<Tuple> result;
         //select all
-        //table=ap.Select(tablename,,);
+        result=api.select(tablename,cond);
+        for(int i=0;i<result.size();i++)
+        {
+            for(int j=0;j<result[i].data.size();j++)
+            {
+                result[i].data[j]->print();
+            }
+            cout<<endl;
+        }
         //print all the tuples;
         return;
     } else if (s != "where") {
         //errror posotion
-        cout << "error!" << endl;
+        throw runtime_error( "Interpreter: invalid query format in SELECT!" );
+        //cout << "error!" << endl;
     }
     for (start = 7; start < (querys.length() - 5); start++) {
         if (querys.substr(start, 5) == "where")
@@ -445,8 +489,6 @@ void Interpreter::EXEC_SELECT() {
     where = querys.substr(start + 6, querys.length() - 6 - start);
 
     table = cm.getTable(tablename);
-    vector<Condition> cond;
-    cond.clear();
     cond = ConditionList(table, where);
     vector<Tuple> tup;
     tup=api.select(tablename,cond);
@@ -458,8 +500,7 @@ void Interpreter::EXEC_SELECT() {
         }
         cout<<endl;
     }
-    /*TableStruct output=ap.select(tableName, cond);
-    EXEC_PRINT(output);*/
+    //EXEC_PRINT(output);
 
     return;
 }
@@ -514,7 +555,8 @@ Tuple &Interpreter::TupleList(TableStruct &table, string where) {
 void Interpreter::EXEC_INSERT() {
     if (querys[6] != ' ')
         //errror posotion
-        cout << "error!" << endl;
+        throw runtime_error( "Interpreter: invalid query format in INSERT!" );
+        //cout << "error!" << endl;
 
     string str = querys.substr(7, querys.length() - 7);
     istringstream is(str);
@@ -527,17 +569,20 @@ void Interpreter::EXEC_INSERT() {
     is >> s;
     if (s != "into") {
         //errror posotion
-        cout << "error1!" << endl;
+        throw runtime_error( "Interpreter: invalid query format in INSERT!" );
+        //cout << "error1!" << endl;
     }
     is >> tablename;
     if (!cm.hasTable(tablename)) {
         //errror posotion
-        cout << "error2!" << endl;
+        throw runtime_error( "Interpreter: invalid query format in INSERT!" );
+        //cout << "error2!" << endl;
     }
     is >> s;
     if (s != "values") {
         //errror posotion
-        cout << "error3!" << endl;
+        throw runtime_error( "Interpreter: invalid query format in INSERT!" );
+        //cout << "error3!" << endl;
     }
     for (start = 7; start < (querys.length() - 5); start++) {
         if (querys.substr(start, 6) == "values")
@@ -559,33 +604,39 @@ void Interpreter::EXEC_INSERT() {
 void Interpreter::EXEC_DELETE() {
     if (querys[6] != ' ')
         //errror posotion
-        cout << "error!" << endl;
+        throw runtime_error( "Interpreter: invalid query format in DELETE!" );
+        //cout << "error!" << endl;
 
     TableStruct table;
     string str = querys.substr(7, querys.length() - 7);
     istringstream is(str);
     string s, tablename, where;
     int start;
+    vector<Condition> cond;
+    cond.clear();
 
     is >> s;
     if (s != "from") {
         //errror posotion
-        cout << "error!" << endl;
+        throw runtime_error( "Interpreter: invalid query format in DELETE for from!" );
+        //cout << "error!" << endl;
     }
     is >> tablename;
     if (!cm.hasTable(tablename)) {
         //errror posotion
-        cout << "error!" << endl;
+        throw runtime_error( "Interpreter: do not have this table!" );
+        //cout << "error!" << endl;
     }
     is >> s;
     if (s == ";") {
         //select all
-        //table=ap.deleteData(tablename);
+        api.deleteData(tablename,cond);
         //print all the tuples;
         return;
     } else if (s != "where") {
         //errror posotion
-        cout << "error!" << endl;
+        throw runtime_error( "Interpreter: invalid query format in DELETE!" );
+        //cout << "error!" << endl;
     }
     for (start = 7; start < (querys.length() - 5); start++) {
         if (querys.substr(start, 5) == "where")
@@ -594,11 +645,9 @@ void Interpreter::EXEC_DELETE() {
     where = querys.substr(start + 6, querys.length() - 6 - start);
 
     table = cm.getTable(tablename);
-    vector<Condition> cond;
-    cond.clear();
     cond = ConditionList(table, where);
-    /*TableStruct output=ap.select(tableName, cond);
-    EXEC_PRINT(output);*/
+    api.deleteData(tablename, cond);
+    //EXEC_PRINT(output);
 
     return;
 }
@@ -618,7 +667,9 @@ void Interpreter::EXEC_EXIT() {
 void Interpreter::EXEC_FILE() {
     if (querys[8] != ' ')
         //errror posotion
-        cout << "error!" << endl;
+        throw runtime_error( "Interpreter: invalid query format in DELETE!" );
+        //cout << "error!" << endl;
+
     string str = querys.substr(9, querys.length() - 9);
     istringstream is(str);
     string filename;
@@ -632,16 +683,19 @@ void Interpreter::EXEC_FILE() {
     cout << filename << endl;
     ifstream in(filename.c_str());
     if (!in.is_open()) {
-        cout << "can not open this file: " << filename << endl;
+        throw runtime_error( "Interpreter: Can not open the file!" );
+        //cout << "can not open this file: " << filename << endl;
     }
     while (!in.eof()) {
         querys.clear();
+        temp.clear();
         end = false;
         while (true) {
             c = in.get();
             if (c == EOF) {
                 end = true;
                 break;
+
             }
 
             if ((c <= 'z' && c >= 'a') || (c <= 'Z' && c >= 'A') || (c >= '0' && c <= '9') || c == '_' || c == '.') {
@@ -699,6 +753,7 @@ void Interpreter::EXEC_FILE() {
         while (temp[start] == ' ') {
             start++;
         }
+        
         querys = temp.substr(start, temp.length() - start);
 
         cout << "minisql>>>" << querys << endl;
@@ -718,6 +773,7 @@ void Interpreter::EXEC_FILE() {
             EXEC_FILE();
         } else {
             cout << "error!" << endl;
+            throw runtime_error( "Interpreter: invalid query format in ECECFILE!" );
             //throw QueryException("ERROR: invalid query format!");
         }
     }

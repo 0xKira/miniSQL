@@ -23,12 +23,12 @@ void API::dropIndex(string indexName)
     cm.deleteIndex(indexName);
 }
 
-vector<Tuple> API::select(string tableName, vector<Condition>& condTable)
+vector<Tuple> &API::select(string tableName, vector<Condition>& condTable)
 {
-	vector<Tuple> result;
-	bool flag = rm.selectFromTable(cm.getTable(tableName), condTable, result);
-	if (!flag) printf("Can't find");
-	return result;
+	vector<Tuple> *result = new vector<Tuple>;
+	bool flag = rm.selectFromTable(cm.getTable(tableName), condTable, *result);
+	if (!flag) printf("Can't find\n");
+	return *result;
 }
 
 void API::insertData(TableStruct &table, Tuple& tuple)
