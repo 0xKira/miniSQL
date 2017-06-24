@@ -33,6 +33,6 @@ int main() {
     vector<Tuple> result;
     rm.selectFromTableWithIndex(ts, d, range, result);
     for (auto res:result) {
-        cout << (dynamic_cast<DataS *>(res.data[2])->x);
+        cout << (dynamic_cast<DataS *>(res.data[2])->x) << endl;
     }
 }
