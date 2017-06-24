@@ -625,7 +625,7 @@ void Interpreter::EXEC_DELETE() {
     is >> s;
     if (s == ";") {
         //select all
-        api.deleteData(tablename, cond);
+        api.deleteData(table, cond);
         //print all the tuples;
         return;
     } else if (s != "where") {
@@ -641,7 +641,7 @@ void Interpreter::EXEC_DELETE() {
 
     table = cm.getTable(tablename);
     cond = ConditionList(table, where);
-    api.deleteData(tablename, cond);
+    api.deleteData(table, cond);
     //EXEC_PRINT(output);
 
     return;
