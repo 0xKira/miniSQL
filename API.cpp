@@ -38,6 +38,11 @@ void API::insertData(TableStruct &table, Tuple &tuple) {
     rm.insertIntoTable(table, tuple);
 }
 
-void API::deleteData(string tableName, vector<Condition> &condTable) {
-    rm.deleteFromTable(cm.getTable(tableName), condTable);
+void API::deleteData(TableStruct &table, vector<Condition> &condTable) {
+    if (table.hasIndex) {
+        // to be done
+        // 调用indexManager的delete
+    } else {
+        rm.deleteFromTable(table, condTable);
+    }
 }

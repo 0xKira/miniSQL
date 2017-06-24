@@ -23,5 +23,5 @@ public:
 	vector<Tuple> &select(TableStruct &table, vector<Condition> &condTable);
 	void insertData(TableStruct &table, Tuple& data);
 	//void deleteData(std::string tableName);
-	void deleteData(std::string tableName, vector<Condition>& condTable);
+	void deleteData(TableStruct &table, vector<Condition> &condTable);
 };
