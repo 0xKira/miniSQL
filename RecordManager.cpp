@@ -116,18 +116,21 @@ RecordManager::deleteFromTable(const TableStruct &table, const vector<Condition>
 bool
 RecordManager::selectFromTable(const TableStruct &table, const vector<Condition> &conditions, vector<Tuple> &result) {
     // 第几个block，block中的第几条记录
-    size_t blockNum;
+    size_t blockNum, selectCount = 0;
     char *buf = new char[blockSize];
 
-    blockNum = table.tupleNum / table.blockMaxRecordCount;
+    blockNum = table.tupleNum / table.blockMaxRecordCount + 1;
     for (size_t i = 0; i < blockNum; i++) {
         bm.readBlockData(table.tableName, i, buf);
         // 遍历所有的记录
         for (int j = 0; j < table.blockMaxRecordCount; j++) {
             Tuple *t = resolveData(table, buf + j * table.tupleSize);
-            if (isConditionSatisfied(conditions, *t))
+            if (isConditionSatisfied(conditions, *t)) {}
                 result.push_back(*t);
             delete t;
+            selectCount++;
+            if (selectCount == table.tupleNum)
+                break;
         }
         i++;
     }

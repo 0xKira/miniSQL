@@ -28,7 +28,7 @@ public:
         type = -1;
     }
     void print() const {
-        cout << x<<" " << endl;
+        cout << x << " " << endl;
     }
     bool operator<(const DataF& n) { return (x < n.x); };
     bool operator==(const DataF& n) { return (x == n.x); };
@@ -46,7 +46,7 @@ public:
         type = 0;
     }
     void print() const {
-        cout << x<<" " << endl;
+        cout << x << " " << endl;
     }
     bool operator<(const DataI& n) { return (x < n.x); };
     bool operator==(const DataI& n) { return (x == n.x); };
@@ -67,7 +67,7 @@ public:
         }
     }
     void print() const {
-        cout << x<<" " << endl;
+        cout << x << " " << endl;
     }
     bool operator<(const DataS& n) { return (x < n.x); };
     bool operator==(const DataS& n) { return (x == n.x); };

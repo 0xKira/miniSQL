@@ -44,3 +44,6 @@ int main() {
     }
 
 }
+//create table taname(name2 int unique,city2 char(8) unique);
+//insert into taname values (123,'wyaa1234');
+//insert into taname values (1234,'wybb1234');
