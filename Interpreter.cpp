@@ -442,7 +442,6 @@ void Interpreter::EXEC_SELECT() {
     int start, i;
     vector<Condition> cond;
     cond.clear();
-    table = cm.getTable(tablename);
 
     is >> s;
     if (s != "*") {
@@ -462,6 +461,7 @@ void Interpreter::EXEC_SELECT() {
         throw runtime_error("Interpreter: invalid query format in SELECT!");
         //cout << "error!" << endl;
     }
+    table = cm.getTable(tablename);
     is >> s;
     if (s == ";") {
         vector<Tuple> result;
