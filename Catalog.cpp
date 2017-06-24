@@ -201,15 +201,15 @@ void Catalog::deleteTable(const string &tablename) {
 }
 
 void Catalog::Print_T(TableStruct& table) {
-	int i;
+    int i;
 
-	cout<<"show this table: "<<table.tableName<<" "<<table.hasIndex<<endl;
+    cout<<"show this table: "<<table.tableName<<" "<<table.hasIndex<<endl;
 
-	for(i=0; i<table.attrs.size(); i++) {
-		cout<<table.attrs[i].attrName<<' '<<table.attrs[i].type<<' ';
-		cout<<table.attrs[i].unique<<' '<<table.attrs[i].isIndex<<endl;
-	}
-	cout<<' '<<table.tupleNum<<endl;
+    for(i=0; i<table.attrs.size(); i++) {
+        cout<<table.attrs[i].attrName<<' '<<table.attrs[i].type<<' ';
+        cout<<table.attrs[i].unique<<' '<<table.attrs[i].isIndex<<endl;
+    }
+    cout<<' '<<table.tupleNum<<endl;
 }
 
 TableStruct &Catalog::getTable(const string &tablename) {
@@ -485,7 +485,7 @@ void Catalog::deleteIndex(const string &indexname) {
     position = position + s.size() + 1;
     is >> s;
     position = position + s.size() + 1;
-   // cout << "before:the valid of this table is " << bufInd[position] << endl;
+    // cout << "before:the valid of this table is " << bufInd[position] << endl;
     bufInd[position] = '0';
     //cout << "after:the valid of this table is " << bufInd[position] << endl;
     is >> s;
@@ -508,4 +508,3 @@ void Catalog::deleteIndex(const string &indexname) {
     //Print_T(table);
     //cout << "delete this index successfully" << endl;
 }
-
