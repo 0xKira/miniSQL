@@ -49,7 +49,7 @@ RecordManager::deleteFromTableWithIndex(TableStruct &table, const vector<Conditi
         do {
             // 读取一条记录
             indexInBlock = range[i] % table.blockMaxRecordCount;
-            Tuple *t = resolveData(table, buf + indexInBlock * table.tupleSize, table.tupleSize);
+            Tuple *t = resolveData(table, buf + indexInBlock * table.tupleSize);
             // 判断这条记录是否需要删除
             if (isConditionSatisfied(conditions, *t)) {
                 if (range[i] != table.tupleNum - 1) {
@@ -92,7 +92,7 @@ RecordManager::selectFromTableWithIndex(const TableStruct &table, const vector<C
         bm.readBlockData(table.tableName, indexInFile, buf);
         do {
             indexInBlock = range[i] % table.blockMaxRecordCount;
-            Tuple *t = resolveData(table, buf + indexInBlock * table.tupleSize, table.tupleSize);
+            Tuple *t = resolveData(table, buf + indexInBlock * table.tupleSize);
             result.push_back(*t);
             delete t;
             i++;
@@ -124,7 +124,7 @@ RecordManager::selectFromTable(const TableStruct &table, const vector<Condition>
         bm.readBlockData(table.tableName, i, buf);
         // 遍历所有的记录
         for (int j = 0; j < table.blockMaxRecordCount; j++) {
-            Tuple *t = resolveData(table, buf + j * table.tupleSize, table.tupleSize);
+            Tuple *t = resolveData(table, buf + j * table.tupleSize);
             if (isConditionSatisfied(conditions, *t))
                 result.push_back(*t);
             delete t;
@@ -155,7 +155,7 @@ void RecordManager::splitTuple(const Tuple &t, char *buf) {
     }
 }
 
-Tuple *RecordManager::resolveData(const TableStruct &table, char *data, size_t tupleSize) {
+Tuple *RecordManager::resolveData(const TableStruct &table, char *data) {
     // 根据TableStruct将数据解析至tuple
     Tuple *t = new Tuple;
     Data *d;

@@ -16,7 +16,7 @@ class RecordManager {
 private:
     void splitTuple(const Tuple &t, char *buf);
 
-    Tuple *resolveData(const TableStruct &table, char *data, size_t tupleSize);
+    Tuple *resolveData(const TableStruct &table, char *data);
     bool isConditionSatisfied(const vector<Condition> &conditions, Tuple &t);
 public:
     RecordManager();
