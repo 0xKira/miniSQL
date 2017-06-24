@@ -19,7 +19,8 @@ public:
 	void dropTable(std::string);
 	void createIndex(std::string, std::string, std::string);
 	void dropIndex(std::string);
-	vector<Tuple> &select(std::string tableName, vector<Condition>& condTable);
+
+	vector<Tuple> &select(TableStruct &table, vector<Condition> &condTable);
 	void insertData(TableStruct &table, Tuple& data);
 	//void deleteData(std::string tableName);
 	void deleteData(std::string tableName, vector<Condition>& condTable);

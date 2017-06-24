@@ -49,9 +49,9 @@ RecordManager::deleteFromTableWithIndex(TableStruct &table, const vector<Conditi
         do {
             // 读取一条记录
             indexInBlock = range[i] % table.blockMaxRecordCount;
-            Tuple &t = resolveData(table, buf + indexInBlock * table.tupleSize, table.tupleSize);
+            Tuple *t = resolveData(table, buf + indexInBlock * table.tupleSize, table.tupleSize);
             // 判断这条记录是否需要删除
-            if (isConditionSatisfied(conditions, t)) {
+            if (isConditionSatisfied(conditions, *t)) {
                 if (range[i] != table.tupleNum - 1) {
                     // 如果不是最后一条，那么将最后一条移动到被删除的地方，如果是最后一条就很爽了，基本啥也不干
                     memcpy(buf + indexInBlock * table.tupleSize,
@@ -70,6 +70,7 @@ RecordManager::deleteFromTableWithIndex(TableStruct &table, const vector<Conditi
                     bm.deleteLastBlockOfFile(table.tableName);
                 }
             }
+            delete t;
             i--;
         } while ((range[i] / table.blockMaxRecordCount) == indexInFile);
     }
@@ -91,8 +92,9 @@ RecordManager::selectFromTableWithIndex(const TableStruct &table, const vector<C
         bm.readBlockData(table.tableName, indexInFile, buf);
         do {
             indexInBlock = range[i] % table.blockMaxRecordCount;
-            Tuple &t = resolveData(table, buf + indexInBlock * table.tupleSize, table.tupleSize);
-            result.push_back(t);
+            Tuple *t = resolveData(table, buf + indexInBlock * table.tupleSize, table.tupleSize);
+            result.push_back(*t);
+            delete t;
             i++;
         } while (i < range.size() && ((range[i] / table.blockMaxRecordCount) == indexInFile));
     }
@@ -108,12 +110,29 @@ RecordManager::selectFromTableWithIndex(const TableStruct &table, const vector<C
 bool
 RecordManager::deleteFromTable(const TableStruct &table, const vector<Condition> &conditions) {
 
-    return false;
+    return true;
 }
 
 bool
 RecordManager::selectFromTable(const TableStruct &table, const vector<Condition> &conditions, vector<Tuple> &result) {
-    return false;
+    // 第几个block，block中的第几条记录
+    size_t blockNum;
+    char *buf = new char[blockSize];
+
+    blockNum = table.tupleNum / table.blockMaxRecordCount;
+    for (size_t i = 0; i < blockNum; i++) {
+        bm.readBlockData(table.tableName, i, buf);
+        // 遍历所有的记录
+        for (int j = 0; j < table.blockMaxRecordCount; j++) {
+            Tuple *t = resolveData(table, buf + j * table.tupleSize, table.tupleSize);
+            if (isConditionSatisfied(conditions, *t))
+                result.push_back(*t);
+            delete t;
+        }
+        i++;
+    }
+    delete[] buf;
+    return true;
 }
 
 void RecordManager::splitTuple(const Tuple &t, char *buf) {
@@ -136,7 +155,7 @@ void RecordManager::splitTuple(const Tuple &t, char *buf) {
     }
 }
 
-Tuple &RecordManager::resolveData(const TableStruct &table, char *data, size_t tupleSize) {
+Tuple *RecordManager::resolveData(const TableStruct &table, char *data, size_t tupleSize) {
     // 根据TableStruct将数据解析至tuple
     Tuple *t = new Tuple;
     Data *d;
@@ -159,7 +178,7 @@ Tuple &RecordManager::resolveData(const TableStruct &table, char *data, size_t t
         }
         t->data.push_back(d);
     }
-    return *t;
+    return t;
 }
 
 // this function is too ugly

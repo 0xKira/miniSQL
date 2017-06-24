@@ -35,4 +35,12 @@ int main() {
     for (auto res:result) {
         cout << (dynamic_cast<DataS *>(res.data[2])->x) << endl;
     }
+    rm.selectFromTable(ts, d, result);
+    for (auto res:result) {
+        cout << (dynamic_cast<DataS *>(res.data[2])->x) << endl;
+    }
+    while (true) {
+        itp.EXEC();
+    }
+
 }

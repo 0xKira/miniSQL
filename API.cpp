@@ -21,9 +21,15 @@ void API::dropIndex(string indexName) {
     cm.deleteIndex(indexName);
 }
 
-vector<Tuple> &API::select(string tableName, vector<Condition> &condTable) {
+vector<Tuple> &API::select(TableStruct &table, vector<Condition> &condTable) {
     vector<Tuple> *result = new vector<Tuple>;
-    bool flag = rm.selectFromTable(cm.getTable(tableName), condTable, *result);
+    bool flag;
+    if (table.hasIndex) {
+        // to be done
+        // 调用indexManager的select
+    } else {
+        flag = rm.selectFromTable(table, condTable, *result);
+    }
     if (!flag) printf("Can't find\n");
     return *result;
 }
