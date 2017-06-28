@@ -31,12 +31,6 @@ public:
     void print() const {
         cout << x << " " << endl;
     }
-    bool operator<(const DataF& n) { return (x < n.x); };
-    bool operator==(const DataF& n) { return (x == n.x); };
-    bool operator<=(const DataF& n) { return (*this < n) || (*this == n); };
-    bool operator>(const DataF& n) { return !(*this <= n); };
-    bool operator!=(const DataF& n) { return !(*this == n); };
-    bool operator>=(const DataF& n) { return !(*this < n); };
 };
 
 class DataI:public Data {
@@ -49,12 +43,6 @@ public:
     void print() const {
         cout << x << " " << endl;
     }
-    bool operator<(const DataI& n) { return (x < n.x); };
-    bool operator==(const DataI& n) { return (x == n.x); };
-    bool operator<=(const DataI& n) { return (*this < n) || (*this == n); };
-    bool operator>(const DataI& n) { return !(*this <= n); };
-    bool operator!=(const DataI& n) { return !(*this == n); };
-    bool operator>=(const DataI& n) { return !(*this < n); };
 };
 
 class DataS:public Data {
@@ -70,12 +58,6 @@ public:
     void print() const {
         cout << x << " " << endl;
     }
-    bool operator<(const DataS& n) { return (x < n.x); };
-    bool operator==(const DataS& n) { return (x == n.x); };
-    bool operator<=(const DataS& n) { return (*this < n) || (*this == n); };
-    bool operator>(const DataS& n) { return !(*this <= n); };
-    bool operator!=(const DataS& n) { return !(*this == n); };
-    bool operator>=(const DataS& n) { return !(*this < n); };
 };
 
 //typedef vector<Data *> Tuple;
