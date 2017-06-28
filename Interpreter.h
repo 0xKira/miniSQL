@@ -35,7 +35,7 @@ public:
 	void EXEC_EXIT();
 	void EXEC_FILE();
 
-	vector<Condition> ConditionList(TableStruct& table, string where);
+    vector<Condition> &ConditionList(TableStruct &table, string where);
 	Tuple &TupleList(TableStruct& table, string where);
 };
 

@@ -347,9 +347,8 @@ void Interpreter::EXEC_DROP() {
     //cout << "error!" << endl;
 }
 
-vector<Condition> Interpreter::ConditionList(TableStruct &table, string where) {
-    vector<Condition> cond;
-    cond.clear();
+vector<Condition> &Interpreter::ConditionList(TableStruct &table, string where) {
+    vector<Condition> *cond = new vector<Condition>;
     istringstream is(where);
     string attrname, op, s;
     int i;
@@ -399,15 +398,15 @@ vector<Condition> Interpreter::ConditionList(TableStruct &table, string where) {
         if ((table.attrs[temp->attrIndex].type < 0) && (invertToFloat(s, f_type))) {
             Data *data_f = new DataF(f_type);
             temp->d = data_f;
-            cond.push_back(*temp);
+            cond->push_back(*temp);
         } else if ((table.attrs[temp->attrIndex].type == 0) && (invertToInt(s, i_type))) {
             Data *data_i = new DataI(i_type);
             temp->d = data_i;
-            cond.push_back(*temp);
+            cond->push_back(*temp);
         } else if (table.attrs[temp->attrIndex].type > 0) {
             Data *data_s = new DataS(s);
             temp->d = data_s;
-            cond.push_back(*temp);
+            cond->push_back(*temp);
         } else {
             delete temp;
             //errror posotion
@@ -422,7 +421,7 @@ vector<Condition> Interpreter::ConditionList(TableStruct &table, string where) {
         }
     }
 
-    return cond;
+    return *cond;
 }
 
 void Interpreter::EXEC_SELECT() {
@@ -436,8 +435,6 @@ void Interpreter::EXEC_SELECT() {
     istringstream is(str);
     string s, tablename, where;
     int start, i;
-    vector<Condition> cond;
-    cond.clear();
 
     is >> s;
     if (s != "*") {
@@ -464,6 +461,7 @@ void Interpreter::EXEC_SELECT() {
 
     if (s == ";") {
         //select all
+        vector<Condition> cond;
         tup = api.select(table, cond);
         for (int i = 0; i < tup.size(); i++) {
             for (int j = 0; j < tup[i].data.size(); j++) {
@@ -484,7 +482,7 @@ void Interpreter::EXEC_SELECT() {
         }
     }
     where = querys.substr(start + 6, querys.length() - 6 - start);
-    cond = ConditionList(table, where);
+    vector<Condition> &cond = ConditionList(table, where);
 
     tup = api.select(table, cond);
     for (i = 0; i < tup.size(); i++) {

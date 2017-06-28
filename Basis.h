@@ -17,7 +17,8 @@ public:
 public:
     virtual ~Data() {
     };
-    virtual void print() const=0;
+
+    virtual void print() const =0;
 };
 
 class DataF:public Data {
