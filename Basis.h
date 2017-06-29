@@ -100,6 +100,24 @@ public:
     size_t attrIndex;
     Data *d;
     CONDITION flag;
+
+    Condition() {
+    }
+
+    Condition(const Condition &c) : attrIndex(c.attrIndex), flag(c.flag) {
+        switch (c.d->type) {
+            case TYPE_FLOAT:
+                this->d = new DataF(dynamic_cast<DataF *>(c.d)->x);
+                break;
+            case TYPE_INT:
+                this->d = new DataI(dynamic_cast<DataI *>(c.d)->x);
+                break;
+            default:
+                this->d = new DataS(dynamic_cast<DataS *>(c.d)->x);
+                break;
+        }
+    }
+
     ~Condition() {
         delete d;
     }
