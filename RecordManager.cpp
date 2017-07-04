@@ -35,6 +35,8 @@ bool RecordManager::insertIntoTable(TableStruct &table, const Tuple &t) {
 bool
 RecordManager::deleteFromTableWithIndex(TableStruct &table, const vector<Condition> &conditions,
                                         vector<int> &range, vector<Data &> &moved, vector<int> &deleted) {
+    if (table.tupleNum == 0)
+        return false;
     // 第几个block，block中的第几条记录
     size_t indexInFile, indexInBlock;
     char *buf = new char[blockSize];
@@ -76,12 +78,61 @@ RecordManager::deleteFromTableWithIndex(TableStruct &table, const vector<Conditi
     }
     delete[] buf;
     delete[] lastBlock;
-    return false;
+    return true;
+}
+
+bool
+RecordManager::deleteFromTable(TableStruct &table, const vector<Condition> &conditions) {
+    if (table.tupleNum == 0)
+        return false;
+    // 第几个block，block中的第几条记录
+    size_t blockNum, recordCount;
+    char *buf = new char[blockSize];
+    char *lastBlock = new char[blockSize];
+
+    // 获得最后一个block的数据
+    blockNum = (table.tupleNum - 1) / table.blockMaxRecordCount + 1;
+    bm.readBlockData(table.tableName, blockNum - 1, lastBlock);
+    // 从后往前读取block
+    for (int i = blockNum - 1; i >= 0; i--) {
+        bm.readBlockData(table.tableName, i, buf);
+        recordCount = (i == blockNum - 1) ? table.tupleNum % table.blockMaxRecordCount : table.blockMaxRecordCount;
+        // 从后往前遍历所有的记录
+        for (int j = recordCount - 1; j >= 0; j--) {
+            Tuple *t = resolveData(table, buf + j * table.tupleSize);
+            // 判断这条记录是否需要删除
+            if (isConditionSatisfied(conditions, *t)) {
+                if (j != table.tupleNum - 1) {
+                    // 如果不是最后一条，那么将最后一条移动到被删除的地方，如果是最后一条就很爽了，基本啥也不干
+                    memcpy(buf + j * table.tupleSize,
+                           lastBlock + (table.tupleNum - 1) % table.blockMaxRecordCount * table.tupleSize,
+                           table.tupleSize);
+                    bm.writeBlockData(table.tableName, i, buf);
+                }
+                table.tupleNum--;
+                if (table.tupleNum % table.blockMaxRecordCount == 0) {
+                    // 此时表已空余一个block
+                    // 更新lastBlock
+                    bm.readBlockData(table.tableName, ((int) table.tupleNum - 1) / table.blockMaxRecordCount,
+                                     lastBlock);
+                    // 删除最后的block
+                    bm.deleteLastBlockOfFile(table.tableName);
+                }
+            }
+            delete t;
+        }
+    }
+    delete[] buf;
+    delete[] lastBlock;
+
+    return true;
 }
 
 bool
 RecordManager::selectFromTableWithIndex(const TableStruct &table, const vector<Condition> &conditions,
                                         vector<int> &range, vector<Tuple> &result) {
+    if (table.tupleNum == 0)
+        return false;
     // 第几个block，block中的第几条记录
     size_t indexInFile, indexInBlock;
     char *buf = new char[blockSize];
@@ -108,18 +159,14 @@ RecordManager::selectFromTableWithIndex(const TableStruct &table, const vector<C
 }
 
 bool
-RecordManager::deleteFromTable(const TableStruct &table, const vector<Condition> &conditions) {
-
-    return true;
-}
-
-bool
 RecordManager::selectFromTable(const TableStruct &table, const vector<Condition> &conditions, vector<Tuple> &result) {
+    if (table.tupleNum == 0)
+        return false;
     // 第几个block，block中的第几条记录
     size_t blockNum, selectCount = 0;
     char *buf = new char[blockSize];
 
-    blockNum = table.tupleNum / table.blockMaxRecordCount + 1;
+    blockNum = (table.tupleNum - 1) / table.blockMaxRecordCount + 1;
     for (size_t i = 0; i < blockNum; i++) {
         bm.readBlockData(table.tableName, i, buf);
         // 遍历所有的记录

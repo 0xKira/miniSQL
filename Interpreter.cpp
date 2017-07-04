@@ -599,7 +599,6 @@ void Interpreter::EXEC_DELETE() {
         throw runtime_error("Interpreter: invalid query format in DELETE!");
     //cout << "error!" << endl;
 
-    TableStruct table;
     string str = querys.substr(7, querys.length() - 7);
     istringstream is(str);
     string s, tablename, where;
@@ -619,6 +618,7 @@ void Interpreter::EXEC_DELETE() {
         throw runtime_error("Interpreter: do not have this table!");
         //cout << "error!" << endl;
     }
+    TableStruct &table = cm.getTable(tablename);
     is >> s;
     if (s == ";") {
         //select all
@@ -636,7 +636,6 @@ void Interpreter::EXEC_DELETE() {
     }
     where = querys.substr(start + 6, querys.length() - 6 - start);
 
-    table = cm.getTable(tablename);
     cond = ConditionList(table, where);
     api.deleteData(table, cond);
     //EXEC_PRINT(output);

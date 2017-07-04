@@ -31,7 +31,8 @@ public:
                                   const vector<Condition> &conditions,
                                   vector<int> &range,
                                   vector<Tuple> &result);
-    bool deleteFromTable(const TableStruct &table,
+
+    bool deleteFromTable(TableStruct &table,
                          const vector<Condition> &conditions);
     bool selectFromTable(const TableStruct &table,
                          const vector<Condition> &conditions,
