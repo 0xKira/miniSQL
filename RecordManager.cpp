@@ -194,57 +194,99 @@ bool RecordManager::isConditionSatisfied(const vector<Condition> &conditions, Tu
             case EQ:
                 switch (con.d->type) {
                     case TYPE_INT:
-                        return dynamic_cast<DataI *>(t.data[con.attrIndex])->x == dynamic_cast<DataI *>(con.d)->x;
+                        if (dynamic_cast<DataI *>(t.data[con.attrIndex])->x != dynamic_cast<DataI *>(con.d)->x)
+                            return false;
+                        break;
                     case TYPE_FLOAT:
-                        return dynamic_cast<DataF *>(t.data[con.attrIndex])->x == dynamic_cast<DataF *>(con.d)->x;
+                        if (dynamic_cast<DataF *>(t.data[con.attrIndex])->x != dynamic_cast<DataF *>(con.d)->x)
+                            return false;
+                        break;
                     default:
-                        return dynamic_cast<DataS *>(t.data[con.attrIndex])->x == dynamic_cast<DataS *>(con.d)->x;
+                        if (dynamic_cast<DataS *>(t.data[con.attrIndex])->x != dynamic_cast<DataS *>(con.d)->x)
+                            return false;
+                        break;
                 }
+                break;
             case LEQ:
                 switch (con.d->type) {
                     case TYPE_INT:
-                        return dynamic_cast<DataI *>(t.data[con.attrIndex])->x <= dynamic_cast<DataI *>(con.d)->x;
+                        if (dynamic_cast<DataI *>(t.data[con.attrIndex])->x > dynamic_cast<DataI *>(con.d)->x)
+                            return false;
+                        break;
                     case TYPE_FLOAT:
-                        return dynamic_cast<DataF *>(t.data[con.attrIndex])->x <= dynamic_cast<DataF *>(con.d)->x;
+                        if (dynamic_cast<DataF *>(t.data[con.attrIndex])->x > dynamic_cast<DataF *>(con.d)->x)
+                            return false;
+                        break;
                     default:
-                        return dynamic_cast<DataS *>(t.data[con.attrIndex])->x <= dynamic_cast<DataS *>(con.d)->x;
+                        if (dynamic_cast<DataS *>(t.data[con.attrIndex])->x > dynamic_cast<DataS *>(con.d)->x)
+                            return false;
+                        break;
                 }
+                break;
             case L:
                 switch (con.d->type) {
                     case TYPE_INT:
-                        return dynamic_cast<DataI *>(t.data[con.attrIndex])->x < dynamic_cast<DataI *>(con.d)->x;
+                        if (dynamic_cast<DataI *>(t.data[con.attrIndex])->x >= dynamic_cast<DataI *>(con.d)->x)
+                            return false;
+                        break;
                     case TYPE_FLOAT:
-                        return dynamic_cast<DataF *>(t.data[con.attrIndex])->x < dynamic_cast<DataF *>(con.d)->x;
+                        if (dynamic_cast<DataF *>(t.data[con.attrIndex])->x >= dynamic_cast<DataF *>(con.d)->x)
+                            return false;
+                        break;
                     default:
-                        return dynamic_cast<DataS *>(t.data[con.attrIndex])->x < dynamic_cast<DataS *>(con.d)->x;
+                        if (dynamic_cast<DataS *>(t.data[con.attrIndex])->x >= dynamic_cast<DataS *>(con.d)->x)
+                            return false;
+                        break;
                 }
+                break;
             case GEQ:
                 switch (con.d->type) {
                     case TYPE_INT:
-                        return dynamic_cast<DataI *>(t.data[con.attrIndex])->x >= dynamic_cast<DataI *>(con.d)->x;
+                        if (dynamic_cast<DataI *>(t.data[con.attrIndex])->x < dynamic_cast<DataI *>(con.d)->x)
+                            return false;
+                        break;
                     case TYPE_FLOAT:
-                        return dynamic_cast<DataF *>(t.data[con.attrIndex])->x >= dynamic_cast<DataF *>(con.d)->x;
+                        if (dynamic_cast<DataF *>(t.data[con.attrIndex])->x < dynamic_cast<DataF *>(con.d)->x)
+                            return false;
+                        break;
                     default:
-                        return dynamic_cast<DataS *>(t.data[con.attrIndex])->x >= dynamic_cast<DataS *>(con.d)->x;
+                        if (dynamic_cast<DataS *>(t.data[con.attrIndex])->x < dynamic_cast<DataS *>(con.d)->x)
+                            return false;
+                        break;
                 }
+                break;
             case G:
                 switch (con.d->type) {
                     case TYPE_INT:
-                        return dynamic_cast<DataI *>(t.data[con.attrIndex])->x > dynamic_cast<DataI *>(con.d)->x;
+                        if (dynamic_cast<DataI *>(t.data[con.attrIndex])->x <= dynamic_cast<DataI *>(con.d)->x)
+                            return false;
+                        break;
                     case TYPE_FLOAT:
-                        return dynamic_cast<DataF *>(t.data[con.attrIndex])->x > dynamic_cast<DataF *>(con.d)->x;
+                        if (dynamic_cast<DataF *>(t.data[con.attrIndex])->x <= dynamic_cast<DataF *>(con.d)->x)
+                            return false;
+                        break;
                     default:
-                        return dynamic_cast<DataS *>(t.data[con.attrIndex])->x > dynamic_cast<DataS *>(con.d)->x;
+                        if (dynamic_cast<DataS *>(t.data[con.attrIndex])->x <= dynamic_cast<DataS *>(con.d)->x)
+                            return false;
+                        break;
                 }
+                break;
             case NEQ:
                 switch (con.d->type) {
                     case TYPE_INT:
-                        return dynamic_cast<DataI *>(t.data[con.attrIndex])->x != dynamic_cast<DataI *>(con.d)->x;
+                        if (dynamic_cast<DataI *>(t.data[con.attrIndex])->x == dynamic_cast<DataI *>(con.d)->x)
+                            return false;
+                        break;
                     case TYPE_FLOAT:
-                        return dynamic_cast<DataF *>(t.data[con.attrIndex])->x != dynamic_cast<DataF *>(con.d)->x;
+                        if (dynamic_cast<DataF *>(t.data[con.attrIndex])->x == dynamic_cast<DataF *>(con.d)->x)
+                            return false;
+                        break;
                     default:
-                        return dynamic_cast<DataS *>(t.data[con.attrIndex])->x != dynamic_cast<DataS *>(con.d)->x;
+                        if (dynamic_cast<DataS *>(t.data[con.attrIndex])->x == dynamic_cast<DataS *>(con.d)->x)
+                            return false;
+                        break;
                 }
+                break;
         }
     }
     return true;
