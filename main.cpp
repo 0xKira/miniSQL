@@ -28,17 +28,17 @@ int main() {
 //    rm.insertIntoTable(ts, t);
     vector<Condition> d;
     vector<int> range;
-    range.push_back(0);
-    range.push_back(1);
-    vector<Tuple> result;
-    rm.selectFromTableWithIndex(ts, d, range, result);
-    for (auto res:result) {
-        cout << (dynamic_cast<DataS *>(res.data[2])->x) << endl;
-    }
-    rm.selectFromTable(ts, d, result);
-    for (auto res:result) {
-        cout << (dynamic_cast<DataS *>(res.data[2])->x) << endl;
-    }
+//    range.push_back(0);
+//    range.push_back(1);
+//    vector<Tuple> result;
+//    rm.selectFromTableWithIndex(ts, d, range, result);
+//    for (auto res:result) {
+//        cout << (dynamic_cast<DataS *>(res.data[2])->x) << endl;
+//    }
+//    rm.selectFromTable(ts, d, result);
+//    for (auto res:result) {
+//        cout << (dynamic_cast<DataS *>(res.data[2])->x) << endl;
+//    }
     while (true) {
         itp.EXEC();
     }
@@ -47,7 +47,7 @@ int main() {
 //create table aaa(name2 int unique,city2 char(8) unique);
 //insert into aaa values (123,'wyaa1234');
 //insert into aaa values (1234,'wybb1234');
-//select * from aaa;
+// delete from aaa where name2=99999;
 //select * from aaa where name2=1234;
 //select * from aaa where name2=1234 and name2>10000;
 //select * from aaa where name2>12 and name2<10000;

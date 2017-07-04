@@ -554,8 +554,6 @@ void Interpreter::EXEC_INSERT() {
     istringstream is(str);
     string s, tablename, values;
     Tuple onetuple;
-    TableStruct *table = new TableStruct();
-
     int start;
 
     is >> s;
@@ -583,12 +581,12 @@ void Interpreter::EXEC_INSERT() {
     values = querys.substr(start + 7, querys.length() - 7 - start);
 
     //cout<<"gettable"<<endl;
-    *table = cm.getTable(tablename);
+    TableStruct &table = cm.getTable(tablename);
     //cout<<"table has get"<<endl;
     onetuple.data.clear();
-    onetuple = TupleList(*table, values);
-    api.insertData(*table, onetuple);
-    cm.writeback(*table);
+    onetuple = TupleList(table, values);
+    api.insertData(table, onetuple);
+    cm.writeback(table);
 
     cout << "insert successfully!" << endl;
 }
