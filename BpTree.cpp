@@ -43,9 +43,9 @@ BpTree::BpTree(const string & index) : indexName(index)
 		size_t moduleSize = 4;
 		if (type < 1) moduleSize += 4; else moduleSize += type;
 		indexFile >> temp;
-		size = temp.length / NODESIZE;
-		buf = (char*)malloc(sizeof(char)*temp.length);
-		strcpy(buf, temp.c_str);
+		size = temp.length() / NODESIZE;
+		buf = (char*)malloc(sizeof(char)*temp.length());
+		strcpy(buf, temp.c_str());
 	}
 	indexFile.close();
 }
@@ -57,7 +57,7 @@ BpTree::~BpTree()
 	indexFile << tableName << endl;
 	indexFile << type << " " << root << endl;
 	indexFile << buf << endl;
-	indexFile.close;
+	indexFile.close();
 }
 
 void BpTree::initialize(Data* data, int pos)
@@ -590,7 +590,6 @@ void BpTree::deleteData(Data* data)
 
 void BpTree::deleteEntry(char * node, Data * data)
 {
-	int i;
 	int& keyNum = *(int*)(node + 9);
 	size_t moduleSize = 4;
 	int keyPos, i;

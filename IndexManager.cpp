@@ -35,9 +35,9 @@ void IndexManager::dropIndex(std::string indexName, TableStruct &table) {
     string filename("./data" + indexName + ".index");
     rm.selectFromTable(table, nullCon, tuples);
     int i;
-    for (i = 0; i < table.attrs.size; i++)
+    for (i = 0; i < table.attrs.size(); i++)
         table.attrs[i].isIndex = 0;
-    remove(filename.c_str);
+    remove(filename.c_str());
 }
 
 int IndexManager::exactSearchWithIndex(std::string indexName, Data *value) {
@@ -67,7 +67,7 @@ void IndexManager::insertNew(string indexName, Data *value, int addr) {
 void IndexManager::deleteOld(string indexName, Data *value) {
     BpTree index(indexName);
     if (index.size == 0)
-        throw TableException("Empty");
+        ;
     else
         index.deleteData(value);
 }
