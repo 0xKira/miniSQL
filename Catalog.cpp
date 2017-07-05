@@ -63,13 +63,26 @@ Catalog::~Catalog() {
 
 bool Catalog::invertToInt(string s, int &x) {
     int i;
+    bool flag;
     x = 0;
+    if(s[0]=='-')
+    {
+        flag=1;
+        s=s.substr(1,s.size());
+    }
+
     for (i = 0; i < s.length(); i++) {
         if (s[i] <= '9' && s[i] >= '0')
             x = x * 10 + s[i] - '0';
         else
             return false;
     }
+
+    if(flag)
+    {
+        x=-x;
+    }
+
     return true;
 }
 

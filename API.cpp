@@ -46,5 +46,5 @@ void API::deleteData(TableStruct &table, vector<Condition> &condTable) {
     } else {
         rm.deleteFromTable(table, condTable);
     }
-    ca.writeback(table);
+    cm.writeback(table);
 }

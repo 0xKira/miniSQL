@@ -19,7 +19,7 @@ void Interpreter::inputQuery() {
     temp.clear();
     while (true) {
         c = cin.get();
-        if ((c <= 'z' && c >= 'a') || (c <= 'Z' && c >= 'A') || (c >= '0' && c <= '9') || c == '_' || c == '.') {
+        if ((c <= 'z' && c >= 'a') || (c <= 'Z' && c >= 'A') || (c >= '0' && c <= '9') || c == '_' || c == '.' || c == '-' ) {
             temp += c;
             valid = 1;
         } else if (c == '\n' || c == '\t' || c == ' ') {
@@ -770,22 +770,42 @@ void Interpreter::EXEC_FILE() {
 
 bool invertToInt(string s, int &x) {
     int i;
+    bool flag;
     x = 0;
+    if(s[0]=='-')
+    {
+        flag=1;
+        s=s.substr(1,s.size());
+    }
+
     for (i = 0; i < s.length(); i++) {
         if (s[i] <= '9' && s[i] >= '0')
             x = x * 10 + s[i] - '0';
         else
             return false;
     }
+
+    if(flag)
+    {
+        x=-x;
+    }
+
     return true;
 }
 
 bool invertToFloat(string s, float &x) {
     x = 0;
     int int_f = 0;
+    bool flag;
     float float_f = 0;
     int i;
     int pdot;
+
+    if(s[0]=='-')
+    {
+        flag=1;
+        s=s.substr(1,s.size());
+    }
 
     for (pdot = 0; pdot < s.length(); pdot++)
         if (s[pdot] == '.')
@@ -804,6 +824,10 @@ bool invertToFloat(string s, float &x) {
             return false;
     }
     x += float_f;
+    if(flag)
+    {
+        x=-x;
+    }
 
     return true;
 }
