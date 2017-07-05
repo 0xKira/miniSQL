@@ -8,11 +8,9 @@
 #include "Basis.h"
 #include "TableStruct.h"
 #include "BufferManager.h"
-#include "Catalog.h"
 
 extern const size_t blockSize;
 extern BufferManager bm;
-extern Catalog ca;
 
 class RecordManager {
 private:
