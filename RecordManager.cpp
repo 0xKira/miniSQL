@@ -1,4 +1,4 @@
-﻿//
+//
 // Created by Kira on 2017/6/13.
 //
 
@@ -122,6 +122,7 @@ RecordManager::deleteFromTable(TableStruct &table, const vector<Condition> &cond
             delete t;
         }
     }
+    ca.writeback(table);
     delete[] buf;
     delete[] lastBlock;
 
