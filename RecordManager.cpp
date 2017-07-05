@@ -6,7 +6,6 @@
 #include "RecordManager.h"
 
 RecordManager::RecordManager() {
-
 }
 
 bool RecordManager::insertIntoTable(TableStruct &table, const Tuple &t) {
