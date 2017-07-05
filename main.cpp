@@ -44,18 +44,17 @@ int main() {
         try {
             itp.EXEC();
         }
-        catch (runtime_error &er) {
-            cout << er.what() << endl;
-            continue;
+        catch (runtime_error &err) {
+            cerr << err.what() << endl;
         }
         if (exitFlag)
             break;
     }
 
 }
-//create table aaa(name2 int unique,city2 char(8) unique);
-//insert into aaa values (123,'wyaa1234');
-//insert into aaa values (1234,'wybb1234');
+// create table aaa(name int unique,city char(8) unique);
+// insert into aaa values (123,'wyaa1234');
+// insert into aaa values (1234,'wybb1234');
 // delete from aaa where name2=99999;
 //select * from aaa where name2=1234;
 //select * from aaa where name2=1234 and name2>10000;
