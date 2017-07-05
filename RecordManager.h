@@ -9,7 +9,6 @@
 #include "TableStruct.h"
 #include "BufferManager.h"
 
-gd
 extern const size_t blockSize;
 extern BufferManager bm;
 
