@@ -775,40 +775,6 @@ bool invertToInt(string s, int &x) {
 }
 
 bool invertToFloat(string s, float &x) {
-    x = 0;
-    int int_f = 0;
-    bool flag;
-    float float_f = 0;
-    int i;
-    int pdot;
-
-    if(s[0]=='-')
-    {
-        flag=1;
-        s=s.substr(1,s.size());
-    }
-
-    for (pdot = 0; pdot < s.length(); pdot++)
-        if (s[pdot] == '.')
-            break;
-    for (i = 0; i < pdot; i++) {
-        if (s[i] <= '9' && s[i] >= '0')
-            int_f = int_f * 10 + s[i] - '0';
-        else
-            return false;
-    }
-    x += int_f;
-    for (i = s.length() - 1; i > pdot; i--) {
-        if (s[i] <= '9' && s[i] >= '0')
-            float_f = (float_f + s[i] - '0') / 10.0;
-        else
-            return false;
-    }
-    x += float_f;
-    if(flag)
-    {
-        x=-x;
-    }
-
+    x = (float) atof(s.c_str());
     return true;
 }
