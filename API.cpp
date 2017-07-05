@@ -31,7 +31,6 @@ vector<Tuple> &API::select(TableStruct &table, vector<Condition> &condTable) {
         flag = rm.selectFromTable(table, condTable, *result);
     }
     if (!flag) printf("Can't find\n");
-    cout<<"sdafaf"<<endl;
     return *result;
 }
 
@@ -46,5 +45,5 @@ void API::deleteData(TableStruct &table, vector<Condition> &condTable) {
     } else {
         rm.deleteFromTable(table, condTable);
     }
-    ca.writeback(table);
+    cm.writeback(table);
 }
