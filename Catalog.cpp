@@ -273,7 +273,7 @@ TableStruct &Catalog::getTable(const string &tablename) {
     is >> s;
     if (s != ";") {
         //error condition
-        throw runtime_error( "Catalog:invalid query format in ECECFILE in getTable!" );
+        throw runtime_error("Catalog:invalid query format in FILE in getTable!");
         cout << "error! don't exit this table" << endl;
     }
     TableStruct *table = new TableStruct(tablename, attrs, hasIndex, tupleNum);
