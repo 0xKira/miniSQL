@@ -651,6 +651,7 @@ void Interpreter::EXEC_PRINT(TableStruct &table) {
 
 void Interpreter::EXEC_EXIT() {
     cout << "exit this minisql" << endl;
+    exitFlag = true;
 }
 
 void Interpreter::EXEC_FILE() {

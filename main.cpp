@@ -13,6 +13,7 @@ RecordManager rm;
 Catalog cm;
 Interpreter itp;
 API api;
+bool exitFlag = false;
 
 int main() {
     vector<Attribute> attrs;
@@ -40,7 +41,15 @@ int main() {
 //        cout << (dynamic_cast<DataS *>(res.data[2])->x) << endl;
 //    }
     while (true) {
-        itp.EXEC();
+        try {
+            itp.EXEC();
+        }
+        catch (runtime_error &er) {
+            cout << er.what() << endl;
+            continue;
+        }
+        if (exitFlag)
+            break;
     }
 
 }

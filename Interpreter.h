@@ -14,6 +14,7 @@
 
 extern Catalog cm;
 extern API api;
+extern bool exitFlag;
 
 class Interpreter {
 //private:
