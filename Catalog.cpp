@@ -130,8 +130,6 @@ void Catalog::addTable(TableStruct &table) {
     if (hasTable(table.tableName)) {
         //error condtion
         throw runtime_error( "Catalog:This tabel has already existed!" );
-        cout << "this table has already exit!" << endl;
-        return;
     }
     os.clear();
     os2.clear();
@@ -170,8 +168,6 @@ void Catalog::deleteTable(const string &tablename) {
         //cout<<hasTable(tablename)<<endl;
         //error condtion
         throw runtime_error( "Catalog:This table do not exist while deletetable!" );
-        //cout << "this table do not exit in the first part od deletetable!" << endl;
-        return;
     }
 
     int pos = cat[tablename];
@@ -255,7 +251,6 @@ TableStruct &Catalog::getTable(const string &tablename) {
     if (s != ";") {
         //error condition
         throw runtime_error("Catalog:invalid query format in FILE in getTable!");
-        cout << "error! don't exit this table" << endl;
     }
     TableStruct *table = new TableStruct(tablename, attrs, hasIndex, tupleNum);
     //Print_T(*table);
@@ -327,7 +322,6 @@ void Catalog::writeback(TableStruct &table) {
     //cout<<"the now epos is: "<<epos<<endl;
     if (epos_b != epos) {
         throw runtime_error( "Catalog:the wrong length of new table while write back!" );
-        //cout << "the wrong length of the new table" << endl;
     } else {
         bufCat.replace(pos_b, os2.str().size(), os2.str());
     }
@@ -421,8 +415,6 @@ void Catalog::addIndex(const string &tablename, const string &indexname, const s
             if (table.attrs[i].unique) {
                 if (table.attrs[i].isIndex) {
                     throw runtime_error( "Catalog:This index has already exist in this attribute while add index!" );
-                    //cout << "there is a index in this attributr" << endl;
-                    //return;
                 } else {
                     //add the index
                     table.attrs[i].isIndex = true;
@@ -430,16 +422,12 @@ void Catalog::addIndex(const string &tablename, const string &indexname, const s
                 }
             } else {
                 throw runtime_error( "Catalog:Thisattributr is not unique while add index!" );
-                //cout << "this attributr is not unique" << endl;
-                //return;
             }
         }
     }
     if (i >= table.attrs.size()) {
         //errror posotion
         throw runtime_error( "Catalog:This can not add index while add index!" );
-        //cout << "error in add index!" << endl;
-        //return;
     }
     pos1 = bufInd.size();
     name=tablename+'_'+attriname;
@@ -449,7 +437,7 @@ void Catalog::addIndex(const string &tablename, const string &indexname, const s
     bufInd += os2.str();
     cat_index.insert(pair<string, int>(indexname, pos1));
     table_index.insert(pair<string,string>(name,indexname));
-    if (table.hasIndex == false) {
+    if (!table.hasIndex) {
         table.hasIndex = true;
     }
     //Print_T(table);
@@ -468,7 +456,7 @@ void Catalog::deleteIndex(const string &indexname) {
     int pos = cat_index[indexname];
     string str = bufInd.substr(pos, bufInd.length() - pos);
     istringstream is(str);
-    string s, tablename, attrname;;
+    string s, tablename, attrname;
     int position = pos;
     int i;
     int flag=0;
