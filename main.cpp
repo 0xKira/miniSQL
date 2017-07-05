@@ -53,9 +53,10 @@ int main() {
 
 }
 // create table aaa(name int unique,city char(8) unique);
+// create table bbb(name int unique,city char(8) unique);
 // insert into aaa values (123,'wyaa1234');
 // insert into aaa values (1234,'wybb1234');
-// delete from aaa where name2=99999;
+// delete from aaa where name=99999;
 //select * from aaa where name2=1234;
 //select * from aaa where name2=1234 and name2>10000;
 //select * from aaa where name2>12 and name2<10000;
