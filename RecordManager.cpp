@@ -107,6 +107,11 @@ RecordManager::deleteFromTable(TableStruct &table, const vector<Condition> &cond
                            lastBlock + (table.tupleNum - 1) % table.blockMaxRecordCount * table.tupleSize,
                            table.tupleSize);
                     bm.writeBlockData(table.tableName, i, buf);
+                    // 如果刚刚写的block是最后一个block则要更新lastBlock
+                    if (i == (table.tupleNum - 1) / table.blockMaxRecordCount) {
+                        bm.readBlockData(table.tableName, ((int) table.tupleNum - 1) / table.blockMaxRecordCount,
+                                         lastBlock);
+                    }
                 }
                 table.tupleNum--;
                 if (table.tupleNum % table.blockMaxRecordCount == 0) {
