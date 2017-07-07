@@ -242,7 +242,7 @@ void Interpreter::EXEC_CREATE_TABLE() {
     }
     TableStruct *table = new TableStruct(tablename, attrs, hasIndex, tuplenum);
     api.createTable(*table);
-    cout << "Interpreter create table successfully" << endl;
+    cout << "Interpreter:create table successfully" << endl;
 
     return;
 }
@@ -285,11 +285,11 @@ void Interpreter::EXEC_CREATE_INDEX() {
         //cout << "error!" << endl;
     }
     //create index
-    cout << indexname << tablename << attrname << endl;
+    //cout << indexname << tablename << attrname << endl;
     //ca.addIndex(tablename,indexname,attrname);
     api.createIndex(tablename, indexname, attrname);
 
-    cout << "Interpreter create index successfully" << endl;
+    cout << "Interpreter:create index successfully" << endl;
 }
 
 void Interpreter::EXEC_DROP() {
@@ -345,6 +345,8 @@ void Interpreter::EXEC_DROP() {
         //error position
         throw runtime_error("Interpreter: invalid query format in DROP_INDEX!");
     //cout << "error!" << endl;
+
+    cout<<"Interpreter:Drop successfully!"<<endl;
 }
 
 vector<Condition> &Interpreter::ConditionList(TableStruct &table, string where) {
@@ -434,7 +436,7 @@ void Interpreter::EXEC_SELECT() {
     string str = querys.substr(7, querys.length() - 7);
     istringstream is(str);
     string s, tablename, where;
-    int start, i;
+    int start=0, i;
 
     is >> s;
     if (s != "*") {
@@ -451,7 +453,7 @@ void Interpreter::EXEC_SELECT() {
     is >> tablename;
     if (!cm.hasTable(tablename)) {
         //errror posotion
-        throw runtime_error("Interpreter: invalid query format in SELECT!");
+        throw runtime_error("Interpreter: This table don't exist!");
         //cout << "error!" << endl;
     }
     is >> s;
@@ -465,6 +467,7 @@ void Interpreter::EXEC_SELECT() {
         tup = api.select(table, cond);
         for (int i = 0; i < tup.size(); i++) {
             for (int j = 0; j < tup[i].data.size(); j++) {
+                cout<<table.attrs[j].attrName<<":"<<" ";
                 tup[i].data[j]->print();
             }
             cout << endl;
@@ -487,13 +490,14 @@ void Interpreter::EXEC_SELECT() {
     tup = api.select(table, cond);
     for (i = 0; i < tup.size(); i++) {
         for (int j = 0; j < tup[i].data.size(); j++) {
+            cout<<table.attrs[j].attrName<<":"<<" ";
             tup[i].data[j]->print();
         }
         cout << ' ';
     }
     cout << endl;
     //EXEC_PRINT(output);
-
+    cout<<"Interpreter:Select successfully!"<<endl;
     return;
 }
 
@@ -588,7 +592,7 @@ void Interpreter::EXEC_INSERT() {
     api.insertData(table, onetuple);
     cm.writeback(table);
 
-    cout << "insert successfully!" << endl;
+    cout << "Interpreter:insert successfully!" << endl;
 }
 
 void Interpreter::EXEC_DELETE() {
@@ -638,6 +642,7 @@ void Interpreter::EXEC_DELETE() {
     api.deleteData(table, cond);
     //EXEC_PRINT(output);
 
+    cout<<"Interpreter:Delete successfully!"<<endl;
     return;
 }
 
@@ -667,10 +672,10 @@ void Interpreter::EXEC_FILE() {
     char c;
     int valid = 0;
     bool end = false;
-    int start;
+    int start=0;
 
     is >> filename;
-    cout << filename << endl;
+    //cout << filename << endl;
     ifstream in(filename.c_str());
     if (!in.is_open()) {
         throw runtime_error("Interpreter: Can not open the file!");
@@ -767,6 +772,8 @@ void Interpreter::EXEC_FILE() {
             //throw QueryException("ERROR: invalid query format!");
         }
     }
+
+    cout<<"Interpreter:Execfile successfully!"<<endl;
 }
 
 bool invertToInt(string s, int &x) {
