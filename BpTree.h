@@ -17,7 +17,8 @@ public:
 	~BpTree();
 	void initialize(Data* data, int pos);
 	int find(Data* data);
-	vector<int> BpTree::range(Data * data, Data* up);
+
+	vector<int> range(Data *data, Data *up);
 	void insert(Data* data, int pos);
 	void insertInParent(char* node, float data, char* newNode);
 	void insertInParent(char* node, int data, char* newNode);

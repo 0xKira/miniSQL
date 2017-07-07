@@ -640,7 +640,7 @@ void Interpreter::EXEC_DELETE() {
 
     cond = ConditionList(table, where);
     api.deleteData(table, cond);
-    //EXEC_PRINT(output);
+    // EXEC_PRINT(output);
 
     cout<<"Interpreter:Delete successfully!"<<endl;
     return;

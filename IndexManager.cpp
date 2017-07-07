@@ -13,6 +13,7 @@ void IndexManager::createIndex(const Attribute &attr, std::string indexName, Tab
     vector<Tuple> tuples;
     RecordManager rm;
     rm.selectFromTable(table, nullCon, tuples);
+	names[table.tableName] = indexName;
     int i;
     for (i = 0; i < table.attrs.size(); i++)
         if (table.attrs[i].attrName == attr.attrName) {
@@ -28,11 +29,12 @@ void IndexManager::createIndex(const Attribute &attr, std::string indexName, Tab
     }
 }
 
-void IndexManager::dropIndex(std::string indexName, TableStruct &table) {
+void IndexManager::dropIndex(std::string indexName) {
     vector<Condition> nullCon;
     vector<Tuple> tuples;
-    RecordManager rm;
-    string filename("./data" + indexName + ".index");
+    string filename("./data/" + indexName + ".index");
+    BpTree index(indexName);
+    TableStruct &table = cm.getTable(index.tableName);
     rm.selectFromTable(table, nullCon, tuples);
     int i;
     for (i = 0; i < table.attrs.size(); i++)
