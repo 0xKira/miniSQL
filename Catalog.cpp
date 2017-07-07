@@ -382,7 +382,7 @@ bool Catalog::hasIndex(const string &indexname) {
     is >> s;
     is >> s;
     if (s != indexname) {
-        //errror condition
+        //error condition
         return false;
     }
     is >> s;
@@ -392,7 +392,7 @@ bool Catalog::hasIndex(const string &indexname) {
     } else if (s == "0")
         return false;
     else {
-        //errror condition
+        //error condition
         return false;
     }
 }

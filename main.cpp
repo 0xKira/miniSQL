@@ -13,6 +13,7 @@ RecordManager rm;
 Catalog cm;
 Interpreter itp;
 API api;
+IndexManager im;
 bool exitFlag = false;
 
 int main() {
@@ -38,4 +39,6 @@ int main() {
 // select * from aaa;
 // select * from aaa where name2=1234 and name2>10000;
 // select * from aaa where name2>12 and name2<10000;
+// create index bbb on aaa (name);
+// drop index bbb;
 
