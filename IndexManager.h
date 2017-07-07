@@ -1,5 +1,6 @@
 #pragma once
 #include <fstream>
+#include <map>
 #include "Basis.h"
 #include "TableStruct.h"
 #include "BufferManager.h"
@@ -7,6 +8,9 @@
 
 class IndexManager
 {
+public:
+	map<string, string> names;
+public:
 	IndexManager() {};
 	~IndexManager() {};
 	void createIndex(const Attribute& attr, std::string indexName, TableStruct& table);

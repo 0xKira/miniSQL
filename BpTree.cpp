@@ -10,7 +10,7 @@ BpTree::BpTree(const TableStruct& table, const string& index, const Attribute& a
 	tableName(table.tableName),
 	indexName(index)
 {
-	string filename("./data/" + index + ".index");
+	string filename(/*"./data/" +*/ index + ".index");
 	fstream indexFile(filename, ios::in);
 	if (!indexFile)
 	{
@@ -19,16 +19,20 @@ BpTree::BpTree(const TableStruct& table, const string& index, const Attribute& a
 		buf = "";
 		indexFile.open(filename, ios::out);
 		indexFile << table.tableName << endl;
-		indexFile << attr.type << " " << 0 << endl;
+		indexFile << attr.type << " " << 0 << " " << 0 << endl;
+		root = 0;
 	}
 	else
-		throw TableException("Index exists!");
+	{
+		cerr << "index exists" << endl;
+		
+	}
 	indexFile.close();
 }
 
 BpTree::BpTree(const string & index) : indexName(index)
 {
-	string filename("./data/" + index + ".index");
+	string filename(/*"./data/" +*/ index + ".index");
 	fstream indexFile(filename, ios::in);
 	if (!indexFile)
 	{
@@ -39,7 +43,7 @@ BpTree::BpTree(const string & index) : indexName(index)
 		string tableName, temp;
 		short type;
 		indexFile >> tableName;
-		indexFile >> type >> root;
+		indexFile >> type >> root >> size;
 		size_t moduleSize = 4;
 		if (type < 1) moduleSize += 4; else moduleSize += type;
 		indexFile >> temp;
@@ -52,10 +56,10 @@ BpTree::BpTree(const string & index) : indexName(index)
 
 BpTree::~BpTree()
 {
-	string filename("./data" + indexName + ".index");
+	string filename(/*"./data" + */indexName + ".index");
 	fstream indexFile(filename, ios::out);
 	indexFile << tableName << endl;
-	indexFile << type << " " << root << endl;
+	indexFile << type << " " << root << " " << size << endl;
 	indexFile << buf << endl;
 	indexFile.close();
 }
@@ -231,6 +235,7 @@ void BpTree::insert(Data * data, int pos)
 	else
 	{
 		char* currentNode = new char[NODESIZE];
+		size++;
 		memcpy(currentNode, buf + root*NODESIZE, NODESIZE);
 		bool ifLeaf = (bool)currentNode[0];
 		int keyNum = *(int*)(currentNode + 9);
@@ -585,6 +590,7 @@ void BpTree::deleteData(Data* data)
 		ifLeaf = (bool)currentNode[0];
 		keyNum = *(int*)(currentNode + 9);
 	}
+	size--;
 	deleteEntry(currentNode, data);
 }
 

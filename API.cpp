@@ -25,8 +25,19 @@ vector<Tuple> &API::select(TableStruct &table, vector<Condition> &condTable) {
     vector<Tuple> *result = new vector<Tuple>;
     bool flag;
     if (table.hasIndex) {
-        // to be done
-        // 调用indexManager的select
+		if (condTable.size() == 1 && condTable[0].flag == EQ)
+		{
+			int temp = im.exactSearchWithIndex(im.names[table.tableName], condTable[0].d);
+			vector<int> tempInt;
+			tempInt.push_back(temp);
+			rm.selectFromTableWithIndex(table, condTable, tempInt, *result);
+		}
+		else
+		{
+			vector<int> tempInt;
+			tempInt = im.rangeSearchWithIndex(im.names[table.tableName], condTable[0].d, condTable[condTable.size()].d);
+			rm.selectFromTableWithIndex(table, condTable, tempInt, *result);
+		}
     } else {
         flag = rm.selectFromTable(table, condTable, *result);
     }
@@ -40,10 +51,11 @@ void API::insertData(TableStruct &table, Tuple &tuple) {
 
 void API::deleteData(TableStruct &table, vector<Condition> &condTable) {
     if (table.hasIndex) {
-        // to be done
-        // 调用indexManager的delete
+		for (int i = 0; i < condTable.size(); i++)
+		{
+			im.deleteOld(im.names[table.tableName], condTable[0].d);
+		}
     } else {
         rm.deleteFromTable(table, condTable);
     }
-    cm.writeback(table);
 }

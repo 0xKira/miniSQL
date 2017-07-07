@@ -9,6 +9,7 @@
 extern Catalog cm;
 extern BufferManager bm;
 extern RecordManager rm;
+extern IndexManager im;
 
 class API
 {
