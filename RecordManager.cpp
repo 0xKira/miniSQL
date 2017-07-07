@@ -101,7 +101,7 @@ RecordManager::deleteFromTable(TableStruct &table, const vector<Condition> &cond
             Tuple *t = resolveData(table, buf + j * table.tupleSize);
             // 判断这条记录是否需要删除
             if (isConditionSatisfied(conditions, *t)) {
-                if (j != table.tupleNum - 1) {
+                if ((j + i * table.blockMaxRecordCount) != table.tupleNum - 1) {
                     // 如果不是最后一条，那么将最后一条移动到被删除的地方，如果是最后一条就很爽了，基本啥也不干
                     memcpy(buf + j * table.tupleSize,
                            lastBlock + (table.tupleNum - 1) % table.blockMaxRecordCount * table.tupleSize,
@@ -183,7 +183,6 @@ RecordManager::selectFromTable(const TableStruct &table, const vector<Condition>
             if (selectCount == table.tupleNum)
                 break;
         }
-        i++;
     }
     delete[] buf;
     return true;
