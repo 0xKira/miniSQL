@@ -38,6 +38,7 @@ int main() {
 // delete from aaa where test<50;
 // select * from aaa;
 // select * from aaa where name2=1234 and name2>10000;
+// select * from aaa where name=1234 and name>10000;
 // select * from aaa where name2>12 and name2<10000;
 // create index bbb on aaa (name);
 // drop index bbb;

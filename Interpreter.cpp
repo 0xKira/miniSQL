@@ -359,19 +359,19 @@ vector<Condition> &Interpreter::ConditionList(TableStruct &table, string where) 
         is >> attrname;
         //cout<<attername<<endl;
         Condition *temp = new Condition;
+        temp->d = new DataI(-1);
         for (i = 0; i < table.attrs.size(); i++) {
             if (table.attrs[i].attrName == attrname) {
-                temp->attrIndex = i;
+                temp->attrIndex = (size_t) i;
                 break;
             }
         }
         if (i == table.attrs.size()) {
             delete temp;
-            //errror posotion
-            cout << "error! no such attribute" << endl;
+            //error position
+            throw runtime_error("error! no such attribute");
         }
         is >> op;
-        //cout<<op<<endl;
         if (op == "=") {
             temp->flag = EQ;
         } else if (op == "<=") {
@@ -386,38 +386,41 @@ vector<Condition> &Interpreter::ConditionList(TableStruct &table, string where) 
             temp->flag = NEQ;
         } else {
             delete temp;
-            //errror posotion
-            cout << "error! no such operation" << endl;
+            //error position
+            throw runtime_error("error! no such operation");
         }
         is >> s;
         if (s == "and") {
             delete temp;
-            //errror posotion
-            cout << "error! no such operation" << endl;
+            //error position
+            throw runtime_error("error! no such operation");
         }
         if ((table.attrs[temp->attrIndex].type < 0) && (invertToFloat(s, f_type))) {
+            delete temp->d;
             Data *data_f = new DataF(f_type);
             temp->d = data_f;
             cond->push_back(*temp);
         } else if ((table.attrs[temp->attrIndex].type == 0) && (invertToInt(s, i_type))) {
+            delete temp->d;
             Data *data_i = new DataI(i_type);
             temp->d = data_i;
             cond->push_back(*temp);
         } else if (table.attrs[temp->attrIndex].type > 0) {
+            delete temp->d;
             Data *data_s = new DataS(s);
             temp->d = data_s;
             cond->push_back(*temp);
         } else {
             delete temp;
-            //errror posotion
-            cout << "error! no such kind of type" << endl;
+            //error position
+            throw runtime_error("error! no such kind of type");
         }
         is >> s;
         if (s == ";")
             break;
         else if (s != "and") {
-            //errror posotion
-            cout << "error! no such SQL" << endl;
+            //error position
+            throw runtime_error("error! no such SQL");
         }
     }
 
@@ -593,7 +596,7 @@ void Interpreter::EXEC_INSERT() {
 
 void Interpreter::EXEC_DELETE() {
     if (querys[6] != ' ')
-        //errror posotion
+        //error position
         throw runtime_error("Interpreter: invalid query format in DELETE!");
     //cout << "error!" << endl;
 
@@ -606,13 +609,13 @@ void Interpreter::EXEC_DELETE() {
 
     is >> s;
     if (s != "from") {
-        //errror posotion
+        //error position
         throw runtime_error("Interpreter: invalid query format in DELETE for from!");
         //cout << "error!" << endl;
     }
     is >> tablename;
     if (!cm.hasTable(tablename)) {
-        //errror posotion
+        //error posotion
         throw runtime_error("Interpreter: do not have this table!");
         //cout << "error!" << endl;
     }
@@ -624,7 +627,7 @@ void Interpreter::EXEC_DELETE() {
         //print all the tuples;
         return;
     } else if (s != "where") {
-        //errror posotion
+        //error position
         throw runtime_error("Interpreter: invalid query format in DELETE!");
         //cout << "error!" << endl;
     }
