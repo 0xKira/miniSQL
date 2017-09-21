@@ -1,1 +1,3 @@
 # miniSQL
+
+a tiny database
